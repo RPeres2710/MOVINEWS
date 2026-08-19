@@ -1,6 +1,7 @@
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -840,6 +841,10 @@
   <div class="toast" id="toast"></div>
 
 <script>
+  const sb = supabase.createClient(
+  'https://kmqiksujoydsihfralam.supabase.co/rest/v1/',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcWlrc3Vqb3lkc2loZnJhbGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNzQ4NDcsImV4cCI6MjEwMjc1MDg0N30.iMBma_nkmPy4eGOymYQzPqDSE9YaVCQw1YWkGsIfaAM'
+);
 /* ================================================================
    CAMADA DE DADOS
    ------------------------------------------------------------------
@@ -912,23 +917,47 @@
   // vinda de uma tabela de perfis, em vez de comparar o e-mail direto.
   const ADMIN_EMAIL = 'r.peres@movisafe-amlat.com';
 
-  let session = null; // troque por: let session = await getSession();
-  function isAdminSession(){ return !!session && session.email.toLowerCase() === ADMIN_EMAIL; }
-  async function loginEditor(email, senha){
-    // Na integração real: const s = await sb.auth.signInWithPassword({email, password:senha}); session = s;
-    const conta = EDITOR_ACCOUNTS.find(c => c.email.toLowerCase() === String(email).toLowerCase() && c.senha === senha);
-    if (!conta) throw new Error('E-mail ou senha incorretos.');
-    session = { email: conta.email };
-    return session;
-  }
-  function logoutEditor(){
-    session = null; // integração real: await sb.auth.signOut();
-  }
+ const ADMIN_EMAIL = 'r.peres@movisafe-amlat.com';
+let session = null;
 
-
+function isAdminSession(){
+  return !!session && session.user.email.toLowerCase() === ADMIN_EMAIL;
+}
+async function loginEditor(email, senha){
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+  if (error) throw new Error('E-mail ou senha incorretos.');
+  session = data.session;
+  return session;
+}
+async function logoutEditor(){
+  await sb.auth.signOut();
+  session = null;
+}
+async function restoreSession(){
+  const { data } = await sb.auth.getSession();
+  session = data.session;
+}
   const todayISO = () => new Date().toISOString().slice(0,10);
   const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
   const daysAhead = (n) => { const d = new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+  async function getArticles(){
+  const { data, error } = await sb.from('materias').select('*').order('data', { ascending: false });
+  if (error) throw error;
+  return data;
+}
+async function addArticle(article){
+  const { data, error } = await sb.from('materias').insert(article).select().single();
+  if (error) throw error;
+  return data;
+}
+async function updateArticle(id, patch){
+  const { error } = await sb.from('materias').update(patch).eq('id', id);
+  if (error) throw error;
+}
+async function deleteArticle(id){
+  const { error } = await sb.from('materias').delete().eq('id', id);
+  if (error) throw error;
+}
 
   let ARTICLES = [
     { id:'a1', titulo:'Operação policial na Cidade de Deus tem ônibus atravessado e via interditada', imagem_url:'https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'operacao-policial', cidade:'Rio de Janeiro', uf:'RJ', data:todayISO(), resumo:'Ação conjunta das forças de segurança provoca atrasos e desvios de rota na região da Zona Oeste. Recomenda-se evitar o acesso principal durante a manhã.', destaque:true },
@@ -1506,27 +1535,13 @@
     });
   });
 
-  /* ---- Upload da imagem de capa (protótipo: converte para data URL em memória) ----
-     Na integração real, troque o bloco abaixo por upload para o Supabase Storage:
-     // async function uploadCoverImage(file){
-     //   const path = `capas/${crypto.randomUUID()}-${file.name}`;
-     //   const { error } = await sb.storage.from('materias-capas').upload(path, file);
-     //   if (error) throw error;
-     //   const { data } = sb.storage.from('materias-capas').getPublicUrl(path);
-     //   return data.publicUrl;
-     // }
-     // (o schema/policies do bucket estão documentados no final do boletim-movisafe.sql)
-  */
-  let currentCoverDataURL = ''; // capa vigente no formulário (nova ou herdada da matéria em edição)
-
-  function readFileAsDataURL(file){
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(reader.result);
-      reader.onerror = reject;
-      reader.readAsDataURL(file);
-    });
-  }
+async function uploadCoverImage(file){
+  const path = `capas/${crypto.randomUUID()}-${file.name}`;
+  const { error } = await sb.storage.from('materias-capas').upload(path, file);
+  if (error) throw error;
+  const { data } = sb.storage.from('materias-capas').getPublicUrl(path);
+  return data.publicUrl;
+}
 
   function setCoverPreview(dataURL){
     const prev = document.getElementById('f-imagem-preview');
@@ -1775,6 +1790,8 @@
   document.getElementById('year').textContent = new Date().getFullYear();
 
   renderSidebarViews();
+  await restoreSession();
+refreshAuthUI();
   renderAll();
 </script>
 </body>
