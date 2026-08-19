@@ -1,7 +1,5 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -331,6 +329,13 @@
   .manage-row .actions button:hover{color:var(--navy);}
   .manage-row .actions button.danger:hover{color:var(--danger);border-color:var(--danger);}
 
+  .metric-row{background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:10px 12px;}
+  .metric-row-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;gap:8px;}
+  .metric-row-email{font-size:12.5px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .metric-row-count{font-family:var(--font-mono);font-size:12px;color:var(--accent);font-weight:700;flex:none;}
+  .metric-bar-track{height:6px;border-radius:999px;background:var(--border);overflow:hidden;}
+  .metric-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg, var(--accent-2), var(--accent));}
+
   .fab-editor{
     display:none;position:fixed;right:20px;bottom:20px;z-index:80;
     background:var(--accent);color:#fff;border:none;border-radius:999px;
@@ -516,6 +521,7 @@
     *{transition:none !important;}
   }
 </style>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
@@ -660,7 +666,6 @@
 
     <!-- LOGIN GATE -->
     <div id="editor-login" style="padding:28px 22px;display:flex;flex-direction:column;gap:14px;">
-      <div class="form-note" style="font-size:12px;">Acesso restrito à equipe Movisafe. Entre com as credenciais do editor para publicar matérias e manifestações.</div>
       <form id="login-form" style="display:flex;flex-direction:column;gap:14px;">
         <div class="field">
           <label>E-mail</label>
@@ -672,7 +677,6 @@
         </div>
         <div id="login-error" style="display:none;color:#ff7c85;font-size:12px;font-family:var(--font-mono);"></div>
         <button type="submit" class="submit-btn">Entrar</button>
-        <div class="form-note">Acesso restrito às contas cadastradas da equipe. Na integração real, isso chama <code>supabase.auth.signInWithPassword()</code> — ver comentário no início do &lt;script&gt;.</div>
       </form>
     </div>
 
@@ -682,6 +686,7 @@
       <button class="drawer-tab" data-pane="pane-gerenciar">Gerenciar</button>
       <button class="drawer-tab admin-only" data-pane="pane-validacao" hidden>Validação</button>
       <button class="drawer-tab admin-only" data-pane="pane-clientes" hidden>Clientes</button>
+      <button class="drawer-tab admin-only" data-pane="pane-metricas" hidden>Métricas</button>
     </div>
     <div class="drawer-body" id="editor-body" hidden>
 
@@ -698,7 +703,7 @@
           <input type="file" id="f-imagem-file" accept="image/*" required>
         </div>
         <div class="img-preview" id="f-imagem-preview">Pré-visualização da capa</div>
-        <div class="form-note" id="f-imagem-keep-note" style="display:none;">Nenhum arquivo novo selecionado — a capa atual será mantida. Escolha um arquivo para substituí-la.</div>
+        <div class="form-note" id="f-imagem-keep-note" style="display:none;">Capa atual será mantida.</div>
         <div class="field">
           <label>Link da matéria original</label>
           <input type="url" id="f-link" required placeholder="https://veiculo.com/materia">
@@ -735,13 +740,16 @@
           <label>Resumo</label>
           <textarea id="f-resumo" rows="3" required placeholder="Breve resumo da matéria..."></textarea>
         </div>
+        <div class="field" id="operador-nome-field" style="display:none;">
+          <label>Nome de quem está inserindo</label>
+          <input type="text" id="f-operador-nome" placeholder="Seu nome">
+        </div>
         <div class="checkbox-field">
           <input type="checkbox" id="f-destaque">
           <label for="f-destaque">Marcar como destaque de hoje</label>
         </div>
         <button type="submit" class="submit-btn" id="f-submit-btn">Publicar matéria</button>
         <button type="button" class="chip" id="f-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
-        <div class="form-note">Ao publicar, a matéria entra em "Destaques de Hoje" se a data for hoje, e migra automaticamente para o Arquivo assim que a data virar.</div>
       </form>
 
       <!-- NOVA MANIFESTAÇÃO -->
@@ -785,7 +793,6 @@
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
           Exportar planilha (CSV)
         </button>
-        <div class="form-note admin-only" hidden style="margin-bottom:4px;">Exporta link, data, tipo e região de todas as matérias publicadas.</div>
         <div class="field">
           <label>Matérias publicadas</label>
         </div>
@@ -798,7 +805,6 @@
 
       <!-- VALIDAÇÃO (minerador automático — admin) -->
       <div class="drawer-pane admin-only" id="pane-validacao" hidden>
-        <div class="form-note" style="background:var(--info-soft);color:var(--info);padding:9px 11px;border-radius:8px;">Módulo exclusivo do administrador. Dispara uma busca e lista candidatas para você (ou o CRI) validar antes de publicar.</div>
         <button type="button" class="submit-btn" id="mine-btn">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
           Minerar novas matérias
@@ -812,7 +818,6 @@
 
       <!-- CLIENTES (admin) -->
       <div class="drawer-pane admin-only" id="pane-clientes" hidden>
-        <div class="form-note" style="background:var(--corp-soft);color:var(--corp);padding:9px 11px;border-radius:8px;">Módulo exclusivo do administrador. Associe empresas clientes às regiões de interesse para curadoria personalizada.</div>
         <form id="form-cliente" style="display:flex;flex-direction:column;gap:14px;">
           <div class="field">
             <label>Nome da empresa</label>
@@ -822,13 +827,31 @@
             <label>Áreas de interesse</label>
             <input type="text" id="c-areas" required placeholder="Ex: Santos, Vitória, Rio de Janeiro">
           </div>
-          <div class="form-note">Separe as regiões por vírgula.</div>
           <button type="submit" class="submit-btn">Adicionar cliente</button>
         </form>
         <div class="field" style="margin-top:18px;">
           <label>Clientes cadastrados</label>
         </div>
         <div class="manage-list" id="manage-clientes"></div>
+      </div>
+
+      <!-- MÉTRICAS (mini-dashboard admin: matérias por operador) -->
+      <div class="drawer-pane admin-only" id="pane-metricas" hidden>
+        <div class="field-row">
+          <div class="field">
+            <label>De</label>
+            <input type="date" id="met-de">
+          </div>
+          <div class="field">
+            <label>Até</label>
+            <input type="date" id="met-ate">
+          </div>
+        </div>
+        <div class="field" style="margin-top:6px;">
+          <label>Matérias por operador</label>
+        </div>
+        <div id="metricas-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div class="form-note" id="metricas-total" style="margin-top:6px;"></div>
       </div>
 
     </div>
@@ -841,187 +864,115 @@
   <div class="toast" id="toast"></div>
 
 <script>
-  const sb = supabase.createClient(
-  'https://kmqiksujoydsihfralam.supabase.co/rest/v1/',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcWlrc3Vqb3lkc2loZnJhbGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNzQ4NDcsImV4cCI6MjEwMjc1MDg0N30.iMBma_nkmPy4eGOymYQzPqDSE9YaVCQw1YWkGsIfaAM'
-);
 /* ================================================================
-   CAMADA DE DADOS
-   ------------------------------------------------------------------
-   Hoje, os dados vivem em memória (arrays abaixo) só para o
-   protótipo não abrir vazio. As funções getArticles/addArticle/...
-   são o único ponto de contato do restante do código com os dados —
-   troque SOMENTE o corpo delas para plugar no Supabase, o resto do
-   sistema (render, filtros, editor) não muda uma linha.
-
-   -------------------- SCHEMA SQL FINAL + RLS ------------------------
-   O arquivo boletim-movisafe.sql (entregue junto) contém o schema
-   completo com as policies de RLS já prontas para copiar e colar no
-   SQL Editor do Supabase. Resumo do modelo de acesso:
-     - leitura (select) das matérias e manifestações: pública (anon) —
-       o boletim é consumido pelos clientes sem login.
-     - inserir/editar/excluir: só usuários autenticados (equipe da
-       Movisafe logada via Supabase Auth).
-
-   -------------------- AUTENTICAÇÃO DO EDITOR (Supabase Auth) -------
-   // 1. Inclua o SDK antes deste script (tag <script src="https://unpkg.com/@supabase/supabase-js@2"><\/script>):
-   // const sb = supabase.createClient('SUA_URL', 'SUA_ANON_KEY');
-
-   // async function loginEditor(email, senha){
-   //   const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
-   //   if (error) throw error;
-   //   return data.session;
-   // }
-   // async function logoutEditor(){ await sb.auth.signOut(); }
-   // async function getSession(){
-   //   const { data } = await sb.auth.getSession();
-   //   return data.session; // null se não estiver logado
-   // }
-   // Contas de editor são criadas manualmente em Authentication > Users
-   // no painel do Supabase (ou via convite), uma por integrante da equipe.
-
-   -------------------- EXEMPLO DE SWAP PARA SUPABASE-JS -------------
-   // async function getArticles(){
-   //   const { data, error } = await sb.from('materias').select('*').order('data', { ascending:false });
-   //   if (error) throw error;
-   //   return data;
-   // }
-   // async function addArticle(article){
-   //   const { data, error } = await sb.from('materias').insert(article).select().single();
-   //   if (error) throw error;
-   //   return data;
-   // }
-   // async function updateArticle(id, patch){
-   //   const { error } = await sb.from('materias').update(patch).eq('id', id);
-   //   if (error) throw error;
-   // }
-   // async function deleteArticle(id){
-   //   const { error } = await sb.from('materias').delete().eq('id', id);
-   //   if (error) throw error;
-   // }
-   // (o mesmo padrão vale para getManifestations/addManifestation/deleteManifestation
-   //  trocando a tabela para 'manifestacoes')
+   CAMADA DE DADOS — conectada ao Supabase (movinews)
+   Schema completo (tabelas, RLS, storage) em boletim-movisafe.sql.
    ================================================================ */
 
-  /* ---- Autenticação (protótipo em memória — trocar por Supabase Auth) ---- */
-  // PROTÓTIPO: lista fixa de contas de editor. Na integração real, isso deixa
-  // de existir — as contas passam a ser gerenciadas em Authentication > Users
-  // no painel do Supabase, e loginEditor() vira uma chamada a
-  // sb.auth.signInWithPassword({ email, password }).
-  const EDITOR_ACCOUNTS = [
-    { email: 'r.peres@movisafe-amlat.com', senha: '210210' },
-    { email: 'cri24@movisafe-amlat.com', senha: '1402' },
-  ];
-  // Único e-mail com acesso aos módulos de administrador (Clientes, Validação,
-  // exportar planilha). Na integração real, troque por uma checagem de "role"
-  // vinda de uma tabela de perfis, em vez de comparar o e-mail direto.
+  const sb = supabase.createClient(
+    'https://kmqiksujoydsihfralam.supabase.co',
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImttcWlrc3Vqb3lkc2loZnJhbGFtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNzQ4NDcsImV4cCI6MjEwMjc1MDg0N30.iMBma_nkmPy4eGOymYQzPqDSE9YaVCQw1YWkGsIfaAM'
+  );
+
+  /* ---- Autenticação (Supabase Auth) ----
+     Contas de editor são criadas em Authentication > Users no painel
+     do Supabase — não existem mais fixas no código. */
   const ADMIN_EMAIL = 'r.peres@movisafe-amlat.com';
 
- const ADMIN_EMAIL = 'r.peres@movisafe-amlat.com';
-let session = null;
+  let session = null; // sempre no formato { email }
+  function isAdminSession(){ return !!session && session.email.toLowerCase() === ADMIN_EMAIL; }
 
-function isAdminSession(){
-  return !!session && session.user.email.toLowerCase() === ADMIN_EMAIL;
-}
-async function loginEditor(email, senha){
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
-  if (error) throw new Error('E-mail ou senha incorretos.');
-  session = data.session;
-  return session;
-}
-async function logoutEditor(){
-  await sb.auth.signOut();
-  session = null;
-}
-async function restoreSession(){
-  const { data } = await sb.auth.getSession();
-  session = data.session;
-}
+  async function loginEditor(email, senha){
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: senha });
+    if (error) throw new Error('E-mail ou senha incorretos.');
+    session = { email: data.session.user.email };
+    return session;
+  }
+  async function logoutEditor(){
+    await sb.auth.signOut();
+    session = null;
+  }
+  async function restoreSession(){
+    const { data } = await sb.auth.getSession();
+    session = data.session ? { email: data.session.user.email } : null;
+  }
+
+
   const todayISO = () => new Date().toISOString().slice(0,10);
   const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); };
   const daysAhead = (n) => { const d = new Date(); d.setDate(d.getDate()+n); return d.toISOString().slice(0,10); };
+
+  /* ---- Matérias (tabela `materias`) ---- */
   async function getArticles(){
-  const { data, error } = await sb.from('materias').select('*').order('data', { ascending: false });
-  if (error) throw error;
-  return data;
-}
-async function addArticle(article){
-  const { data, error } = await sb.from('materias').insert(article).select().single();
-  if (error) throw error;
-  return data;
-}
-async function updateArticle(id, patch){
-  const { error } = await sb.from('materias').update(patch).eq('id', id);
-  if (error) throw error;
-}
-async function deleteArticle(id){
-  const { error } = await sb.from('materias').delete().eq('id', id);
-  if (error) throw error;
-}
+    const { data, error } = await sb.from('materias').select('*').order('data', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+  async function addArticle(article){
+    const { data, error } = await sb.from('materias').insert(article).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async function updateArticle(id, patch){
+    const { error } = await sb.from('materias').update(patch).eq('id', id);
+    if (error) throw error;
+  }
+  async function deleteArticle(id){
+    const { error } = await sb.from('materias').delete().eq('id', id);
+    if (error) throw error;
+  }
 
-  let ARTICLES = [
-    { id:'a1', titulo:'Operação policial na Cidade de Deus tem ônibus atravessado e via interditada', imagem_url:'https://images.unsplash.com/photo-1591604021695-0c69b7c05981?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'operacao-policial', cidade:'Rio de Janeiro', uf:'RJ', data:todayISO(), resumo:'Ação conjunta das forças de segurança provoca atrasos e desvios de rota na região da Zona Oeste. Recomenda-se evitar o acesso principal durante a manhã.', destaque:true },
-    { id:'a2', titulo:'Furto de cabos deixa cerca de 20 mil moradores sem abastecimento de água', imagem_url:'https://images.unsplash.com/photo-1620656798579-1284503a1dfc?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'furto-roubo', cidade:'Santa Maria da Boa Vista', uf:'PE', data:todayISO(), resumo:'Concessionária local trabalha na substituição do trecho furtado; previsão de normalização em 48h para os bairros afetados.', destaque:true },
-    { id:'a3', titulo:'Caminhoneiro é mantido refém durante roubo de carga na Zona Norte', imagem_url:'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'furto-roubo', cidade:'Rio de Janeiro', uf:'RJ', data:todayISO(), resumo:'Vítima foi liberada sem ferimentos após ação de quadrilha especializada em roubo de cargas na Avenida Brasil.', destaque:false },
-    { id:'a4', titulo:'Interdição parcial na Linha Vermelha após acidente com três veículos', imagem_url:'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'transito', cidade:'Rio de Janeiro', uf:'RJ', data:daysAgo(1), resumo:'Faixa da esquerda bloqueada sentido Centro; tempo de viagem aumenta em até 40 minutos no horário de pico.', destaque:false },
-    { id:'a5', titulo:'Grupo é preso suspeito de furtar cabos de energia solar em usina', imagem_url:'https://images.unsplash.com/photo-1509391366360-2e959784a276?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'seguranca', cidade:'Várzea Grande', uf:'MT', data:daysAgo(1), resumo:'Ação da Polícia Civil resulta em cinco prisões e recuperação de parte do material subtraído de planta fotovoltaica.', destaque:false },
-    { id:'a6', titulo:'Alerta corporativo: reforço de rondas em área industrial após tentativas de invasão', imagem_url:'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'alerta-corporativo', cidade:'Duque de Caxias', uf:'RJ', data:daysAgo(2), resumo:'Clientes com operação na região devem reforçar controle de acesso e comunicar movimentações fora do horário comercial.', destaque:false },
-    { id:'a7', titulo:'PM intensifica policiamento em corredor logístico após onda de assaltos a cargas', imagem_url:'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'operacao-policial', cidade:'Duque de Caxias', uf:'RJ', data:daysAgo(3), resumo:'Reforço no policiamento ostensivo ao longo da Via Dutra após aumento de 18% nas ocorrências no último mês.', destaque:false },
-    { id:'a8', titulo:'Rodízio de veículos pesados é antecipado por obras na Avenida Brasil', imagem_url:'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'transito', cidade:'Rio de Janeiro', uf:'RJ', data:daysAgo(4), resumo:'Mudança no horário de restrição de circulação passa a valer a partir da próxima segunda-feira.', destaque:false },
-    { id:'a9', titulo:'Câmeras registram ação de arrombamento em galpão industrial', imagem_url:'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'seguranca', cidade:'Duque de Caxias', uf:'RJ', data:daysAgo(5), resumo:'Monitoramento remoto identificou a ocorrência em tempo real e acionou a Polícia Militar.', destaque:false },
-    { id:'a10', titulo:'Bloqueio parcial na BR-040 após queda de barreira', imagem_url:'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'transito', cidade:'Petrópolis', uf:'RJ', data:daysAgo(6), resumo:'Concessionária opera com uma faixa liberada; previsão de liberação total ainda não definida.', destaque:false },
-    { id:'a11', titulo:'Operação combate receptação de cargas roubadas em depósito clandestino', imagem_url:'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'operacao-policial', cidade:'São João de Meriti', uf:'RJ', data:daysAgo(8), resumo:'Ação resulta na apreensão de mercadorias avaliadas em mais de R$ 2 milhões.', destaque:false },
-    { id:'a12', titulo:'Alerta corporativo: aumento de abordagens em vias de acesso a polos industriais', imagem_url:'https://images.unsplash.com/photo-1558021212-51b6ecfa0db9?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'alerta-corporativo', cidade:'Itaboraí', uf:'RJ', data:daysAgo(10), resumo:'Clientes com frota própria devem reforçar orientação a motoristas sobre rotas alternativas.', destaque:false },
-    { id:'a13', titulo:'Polícia Rodoviária reforça fiscalização em trecho de serra após acidentes', imagem_url:'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?q=80&w=800&auto=format&fit=crop', link_original:'#', categoria:'transito', cidade:'Teresópolis', uf:'RJ', data:daysAgo(12), resumo:'Radares móveis passam a operar em três pontos críticos da rodovia.', destaque:false },
-  ];
+  /* ---- Manifestações (tabela `manifestacoes`) ---- */
+  async function getManifestations(){
+    const { data, error } = await sb.from('manifestacoes').select('*').order('data', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+  async function addManifestation(m){
+    const { data, error } = await sb.from('manifestacoes').insert(m).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async function deleteManifestation(id){
+    const { error } = await sb.from('manifestacoes').delete().eq('id', id);
+    if (error) throw error;
+  }
 
-  let MANIFESTACOES = [
-    { id:'m1', titulo:'Ato público estadual dos professores e aposentados', data:daysAhead(2), impacto:'alto', regiao:'Porto Alegre - Centro Histórico', local:'Praça Marechal Deodoro', descricao:'Concentração prevista a partir das 9h com possível interdição de vias no entorno da praça.' },
-    { id:'m2', titulo:'Ato das docentes da educação infantil', data:daysAhead(4), impacto:'medio', regiao:'Rio de Janeiro - Copacabana', local:'Posto 6 - Praia de Copacabana', descricao:'Manifestação pacífica com concentração na orla; possível lentidão na Avenida Atlântica.' },
-    { id:'m3', titulo:'Ato no Edisen em defesa dos direitos trabalhistas', data:daysAhead(6), impacto:'baixo', regiao:'Rio de Janeiro - Centro', local:'Edisen - Petrobras', descricao:'Ato de baixa adesão prevista, sem impacto relevante na circulação de veículos.' },
-    { id:'m4', titulo:'Mobilização dos municipários', data:daysAhead(8), impacto:'medio', regiao:'Porto Alegre - Medianeira', local:'Rótula da Medianeira', descricao:'Concentração seguida de caminhada até a sede da prefeitura; recomenda-se rota alternativa.' },
-  ];
+  /* ---- Clientes (tabela `clientes` — admin) ---- */
+  async function getClients(){
+    const { data, error } = await sb.from('clientes').select('*').order('nome', { ascending: true });
+    if (error) throw error;
+    return data;
+  }
+  async function addClient(c){
+    const { data, error } = await sb.from('clientes').insert(c).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async function deleteClient(id){
+    const { error } = await sb.from('clientes').delete().eq('id', id);
+    if (error) throw error;
+  }
 
-  async function getArticles(){ return ARTICLES; }
-  async function addArticle(article){ ARTICLES.unshift({ id:'a'+Date.now(), ...article }); return article; }
-  async function updateArticle(id, patch){ ARTICLES = ARTICLES.map(a => a.id===id ? {...a, ...patch} : a); }
-  async function deleteArticle(id){ ARTICLES = ARTICLES.filter(a => a.id!==id); }
-
-  async function getManifestations(){ return MANIFESTACOES; }
-  async function addManifestation(m){ MANIFESTACOES.unshift({ id:'m'+Date.now(), ...m }); return m; }
-  async function deleteManifestation(id){ MANIFESTACOES = MANIFESTACOES.filter(m => m.id!==id); }
-
-  /* ---- Clientes (admin) ----
-     SCHEMA SQL: tabela `clientes` — ver boletim-movisafe.sql.
-     RLS real: select/insert/update/delete restritos a auth.email() = e-mail do admin. */
-  let CLIENTES = [];
-  async function getClients(){ return CLIENTES; }
-  async function addClient(c){ CLIENTES.unshift({ id:'c'+Date.now(), ...c }); return c; }
-  async function deleteClient(id){ CLIENTES = CLIENTES.filter(c => c.id!==id); }
-
-  /* ---- Matérias pendentes de validação (minerador automático) ----
-     PROTÓTIPO: mineNews() abaixo é SIMULADA — só gera candidatas de exemplo.
-     Isso é proposital: uma busca real na web usando o Claude não pode ser
-     chamada diretamente do navegador (exigiria expor uma chave de API no
-     código-fonte, o que nunca deve ser feito). A arquitetura real é:
-
-     1) Uma Supabase Edge Function (server-side) recebe o clique de "Minerar",
-        chama a API da Anthropic com a tool de busca na web habilitada:
-          POST https://api.anthropic.com/v1/messages
-          { model:"claude-...", tools:[{type:"web_search_20250305", name:"web_search"}], ... }
-        usando a ANTHROPIC_API_KEY guardada como secret da Edge Function
-        (nunca no front-end).
-     2) A Edge Function filtra/formata os resultados e grava cada candidata
-        na tabela `materias_pendentes` (ver boletim-movisafe.sql).
-     3) Este painel apenas lê `materias_pendentes` (getPending) e, quando o
-        admin valida, move o registro para `materias` (addArticle) e apaga
-        o pendente (discardPending) — exatamente o fluxo já implementado
-        abaixo, só trocando o "de onde vêm os dados".
-     SCHEMA SQL: tabela `materias_pendentes` — ver boletim-movisafe.sql. */
-  let PENDING = [];
-  async function getPending(){ return PENDING; }
-  async function addPending(item){ PENDING.unshift({ id:'p'+Date.now(), ...item }); return item; }
-  async function discardPending(id){ PENDING = PENDING.filter(p => p.id!==id); }
+  /* ---- Matérias pendentes de validação (tabela `materias_pendentes`) ----
+     Preenchida pela Edge Function de mineração (fora do escopo deste
+     arquivo — ver boletim-movisafe.sql). O botão "Minerar" abaixo
+     insere uma candidata de exemplo direto na tabela só para você
+     testar o fluxo de validação enquanto a Edge Function não existe. */
+  async function getPending(){
+    const { data, error } = await sb.from('materias_pendentes').select('*').order('minerado_em', { ascending: false });
+    if (error) throw error;
+    return data;
+  }
+  async function addPending(item){
+    const { data, error } = await sb.from('materias_pendentes').insert(item).select().single();
+    if (error) throw error;
+    return data;
+  }
+  async function discardPending(id){
+    const { error } = await sb.from('materias_pendentes').delete().eq('id', id);
+    if (error) throw error;
+  }
 
   /* ================================================================
      CONFIGURAÇÃO DE CATEGORIAS E SERVIÇOS
@@ -1297,7 +1248,7 @@ async function deleteArticle(id){
         <img src="${a.imagem_url}" alt="">
         <div class="mi">
           <div class="t">${a.titulo}</div>
-          <div class="s">${fmtDatePt(a.data)} · ${catLabel(a.categoria)}</div>
+          <div class="s">${fmtDatePt(a.data)} · ${catLabel(a.categoria)} · <span title="Operador">${a.operador_nome ? `${a.operador_nome} (CRI)` : (a.operador || 'desconhecido')}</span></div>
         </div>
         <div class="actions">
           <button class="toggle-destaque" title="Alternar destaque">${a.destaque ? '★' : '☆'}</button>
@@ -1413,8 +1364,49 @@ async function deleteArticle(id){
     }));
   }
 
+  async function renderMetrics(){
+    const deInput = document.getElementById('met-de');
+    const ateInput = document.getElementById('met-ate');
+    if (!deInput.value) deInput.value = daysAgo(30);
+    if (!ateInput.value) ateInput.value = todayISO();
+    const de = deInput.value;
+    const ate = ateInput.value;
+
+    const arts = await getArticles();
+    const noRange = arts.filter(a => {
+      const d = (a.criado_em || a.data || '').slice(0, 10);
+      return d >= de && d <= ate;
+    });
+
+    const counts = {};
+    noRange.forEach(a => {
+      const op = a.operador || 'desconhecido';
+      // Conta compartilhada do CRI: subdivide por nome de quem inseriu.
+      // Demais contas (ex: admin) contam como uma linha única por e-mail.
+      const key = op.toLowerCase() === 'cri24@movisafe-amlat.com'
+        ? `CRI · ${a.operador_nome || 'sem identificação'}`
+        : op;
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    const ranking = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+    const max = ranking.length ? ranking[0][1] : 0;
+
+    const el = document.getElementById('metricas-list');
+    el.innerHTML = ranking.length ? ranking.map(([label, count]) => `
+      <div class="metric-row">
+        <div class="metric-row-top">
+          <span class="metric-row-email">${label}</span>
+          <span class="metric-row-count">${count}</span>
+        </div>
+        <div class="metric-bar-track"><div class="metric-bar-fill" style="width:${max ? (count/max*100) : 0}%"></div></div>
+      </div>
+    `).join('') : `<div class="form-note">Nenhuma matéria inserida no período selecionado.</div>`;
+
+    document.getElementById('metricas-total').textContent = `Total no período: ${noRange.length} matéria${noRange.length===1?'':'s'} · ${ranking.length} operador${ranking.length===1?'':'es'}`;
+  }
+
   async function renderAll(){
-    await Promise.all([renderHome(), renderArquivo(), renderManifestacoes(), renderGerenciar(), renderSidebarCategories(), renderClientes(), renderPending()]);
+    await Promise.all([renderHome(), renderArquivo(), renderManifestacoes(), renderGerenciar(), renderSidebarCategories(), renderClientes(), renderPending(), renderMetrics()]);
   }
 
   /* ================================================================
@@ -1492,6 +1484,18 @@ async function deleteArticle(id){
   const logoutBtn = document.getElementById('logout-btn');
 
 
+  function requiresOperadorName(){
+    return !!session && session.email.toLowerCase() === 'cri24@movisafe-amlat.com';
+  }
+  function updateOperadorNomeField(){
+    const needsName = requiresOperadorName();
+    const wrap = document.getElementById('operador-nome-field');
+    const input = document.getElementById('f-operador-nome');
+    wrap.style.display = needsName ? 'block' : 'none';
+    input.required = needsName;
+    if (!needsName) input.value = '';
+  }
+
   function refreshAuthUI(){
     const isIn = !!session;
     const isAdmin = isAdminSession();
@@ -1500,7 +1504,8 @@ async function deleteArticle(id){
     editorBody.hidden = !isIn;
     logoutBtn.hidden = !isIn;
     document.querySelectorAll('.admin-only').forEach(el => { el.hidden = !isAdmin; });
-    if (isIn) { renderGerenciar(); renderClientes(); renderPending(); }
+    updateOperadorNomeField();
+    if (isIn) { renderGerenciar(); renderClientes(); renderPending(); renderMetrics(); }
   }
   function openDrawer(){ drawer.classList.add('open'); backdrop.classList.add('open'); refreshAuthUI(); }
   function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('open'); }
@@ -1522,8 +1527,8 @@ async function deleteArticle(id){
       errEl.style.display = 'block';
     }
   });
-  logoutBtn.addEventListener('click', () => {
-    logoutEditor();
+  logoutBtn.addEventListener('click', async () => {
+    await logoutEditor();
     refreshAuthUI();
     showToast('Sessão encerrada');
   });
@@ -1535,28 +1540,34 @@ async function deleteArticle(id){
     });
   });
 
-async function uploadCoverImage(file){
-  const path = `capas/${crypto.randomUUID()}-${file.name}`;
-  const { error } = await sb.storage.from('materias-capas').upload(path, file);
-  if (error) throw error;
-  const { data } = sb.storage.from('materias-capas').getPublicUrl(path);
-  return data.publicUrl;
-}
-
-  function setCoverPreview(dataURL){
-    const prev = document.getElementById('f-imagem-preview');
-    prev.innerHTML = dataURL ? `<img src="${dataURL}">` : 'Pré-visualização da capa';
+  /* ---- Upload da imagem de capa (Supabase Storage, bucket `materias-capas`) ---- */
+  async function uploadCoverImage(file){
+    const path = `capas/${crypto.randomUUID()}-${file.name}`;
+    const { error } = await sb.storage.from('materias-capas').upload(path, file);
+    if (error) throw error;
+    const { data } = sb.storage.from('materias-capas').getPublicUrl(path);
+    return data.publicUrl;
   }
 
-  document.getElementById('f-imagem-file').addEventListener('change', async (e) => {
+  let currentCoverFile = null; // File selecionado (só é enviado ao Storage no submit)
+  let currentCoverURL = '';    // URL de preview (blob local novo, ou URL remota já existente ao editar)
+
+  function setCoverPreview(url){
+    const prev = document.getElementById('f-imagem-preview');
+    prev.innerHTML = url ? `<img src="${url}">` : 'Pré-visualização da capa';
+  }
+
+  document.getElementById('f-imagem-file').addEventListener('change', (e) => {
     const file = e.target.files && e.target.files[0];
     const keepNote = document.getElementById('f-imagem-keep-note');
     if (!file){
+      currentCoverFile = null;
       keepNote.style.display = document.getElementById('f-edit-id').value ? 'block' : 'none';
       return;
     }
-    currentCoverDataURL = await readFileAsDataURL(file);
-    setCoverPreview(currentCoverDataURL);
+    currentCoverFile = file;
+    currentCoverURL = URL.createObjectURL(file);
+    setCoverPreview(currentCoverURL);
     keepNote.style.display = 'none';
   });
 
@@ -1566,7 +1577,9 @@ async function uploadCoverImage(file){
     document.getElementById('pane-materia').reset();
     document.getElementById('f-edit-id').value = '';
     document.getElementById('f-data').value = todayISO();
-    currentCoverDataURL = '';
+    document.getElementById('f-submit-btn').disabled = false;
+    currentCoverFile = null;
+    currentCoverURL = '';
     setCoverPreview('');
     document.getElementById('f-imagem-file').required = true;
     document.getElementById('f-imagem-keep-note').style.display = 'none';
@@ -1574,6 +1587,7 @@ async function uploadCoverImage(file){
     document.getElementById('f-submit-btn').textContent = 'Publicar matéria';
     document.getElementById('f-cancel-edit').style.display = 'none';
     pendingReviewSourceId = null;
+    updateOperadorNomeField();
   }
 
   function openMateriaForEdit(art){
@@ -1591,8 +1605,9 @@ async function uploadCoverImage(file){
     document.getElementById('f-destaque').checked = !!art.destaque;
     document.getElementById('f-imagem-file').required = false;
     document.getElementById('f-imagem-file').value = '';
-    currentCoverDataURL = art.imagem_url;
-    setCoverPreview(currentCoverDataURL);
+    currentCoverFile = null;
+    currentCoverURL = art.imagem_url;
+    setCoverPreview(currentCoverURL);
     document.getElementById('f-imagem-keep-note').style.display = 'block';
     document.getElementById('edit-mode-banner').textContent = 'Editando matéria publicada';
     document.getElementById('edit-mode-banner').style.display = 'block';
@@ -1629,13 +1644,33 @@ async function uploadCoverImage(file){
   document.getElementById('pane-materia').addEventListener('submit', async (e) => {
     e.preventDefault();
     const editId = document.getElementById('f-edit-id').value;
-    if (!currentCoverDataURL){
+    if (!currentCoverFile && !currentCoverURL){
       showToast('Selecione uma imagem de capa');
+      return;
+    }
+    const operadorNome = document.getElementById('f-operador-nome').value.trim();
+    if (requiresOperadorName() && !operadorNome){
+      showToast('Informe seu nome para publicar por esta conta');
+      return;
+    }
+    const submitBtn = document.getElementById('f-submit-btn');
+    const originalBtnText = submitBtn.textContent;
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Enviando...';
+    let imagemUrl = currentCoverURL;
+    try {
+      if (currentCoverFile){
+        imagemUrl = await uploadCoverImage(currentCoverFile);
+      }
+    } catch (err) {
+      showToast('Falha no upload da capa');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
       return;
     }
     const payload = {
       titulo: document.getElementById('f-titulo').value,
-      imagem_url: currentCoverDataURL,
+      imagem_url: imagemUrl,
       link_original: document.getElementById('f-link').value,
       categoria: document.getElementById('f-categoria').value,
       cidade: document.getElementById('f-cidade').value,
@@ -1644,20 +1679,31 @@ async function uploadCoverImage(file){
       resumo: document.getElementById('f-resumo').value,
       destaque: document.getElementById('f-destaque').checked,
     };
-    if (editId){
-      await updateArticle(editId, payload);
-      showToast('Matéria atualizada com sucesso');
-    } else {
-      await addArticle(payload);
-      if (pendingReviewSourceId){
-        await discardPending(pendingReviewSourceId);
-        showToast('Candidata validada e publicada');
+    try {
+      if (editId){
+        await updateArticle(editId, payload);
+        showToast('Matéria atualizada com sucesso');
       } else {
-        showToast('Matéria publicada com sucesso');
+        await addArticle({
+          ...payload,
+          operador: session ? session.email : 'desconhecido',
+          operador_nome: requiresOperadorName() ? operadorNome : null,
+          criado_em: new Date().toISOString(),
+        });
+        if (pendingReviewSourceId){
+          await discardPending(pendingReviewSourceId);
+          showToast('Candidata validada e publicada');
+        } else {
+          showToast('Matéria publicada com sucesso');
+        }
       }
+      resetMateriaForm();
+      renderAll();
+    } catch (err) {
+      showToast('Erro ao salvar a matéria');
+      submitBtn.disabled = false;
+      submitBtn.textContent = originalBtnText;
     }
-    resetMateriaForm();
-    renderAll();
   });
 
   document.getElementById('pane-manif').addEventListener('submit', async (e) => {
@@ -1688,6 +1734,10 @@ async function uploadCoverImage(file){
     showToast('Cliente cadastrado');
     renderClientes();
   });
+
+  /* ---- Métricas (admin) ---- */
+  document.getElementById('met-de').addEventListener('change', renderMetrics);
+  document.getElementById('met-ate').addEventListener('change', renderMetrics);
 
   /* ---- Exportar planilha CSV (admin) ----
      Gera link, data, tipo e região de todas as matérias publicadas.
@@ -1727,11 +1777,11 @@ async function uploadCoverImage(file){
     const btn = document.getElementById('mine-btn');
     const status = document.getElementById('mine-status');
     btn.disabled = true;
-    status.textContent = 'Buscando (protótipo simulado)...';
+    status.textContent = 'Buscando...';
     await new Promise(r => setTimeout(r, 900));
     const pick = MINE_SAMPLE_POOL[Math.floor(Math.random() * MINE_SAMPLE_POOL.length)];
     await addPending({ ...pick, data: todayISO(), fonte: 'busca web (exemplo)' });
-    status.textContent = 'Protótipo: candidata de exemplo adicionada — a busca real precisa de uma Edge Function no servidor (ver comentário no código).';
+    status.textContent = 'Candidata adicionada.';
     btn.disabled = false;
     renderPending();
   });
@@ -1789,10 +1839,16 @@ async function uploadCoverImage(file){
 
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  renderSidebarViews();
-  await restoreSession();
-refreshAuthUI();
-  renderAll();
+  sb.auth.onAuthStateChange((_event, sbSession) => {
+    session = sbSession ? { email: sbSession.user.email } : null;
+    refreshAuthUI();
+  });
+
+  restoreSession().then(() => {
+    refreshAuthUI();
+    renderSidebarViews();
+    renderAll();
+  });
 </script>
 </body>
 </html>
