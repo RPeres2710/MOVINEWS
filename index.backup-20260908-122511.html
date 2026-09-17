@@ -213,11 +213,6 @@
   .cat-transito{background:var(--warn-soft);color:var(--warn);}
   .cat-operacao-policial{background:var(--info-soft);color:var(--info);}
   .cat-furto-roubo{background:var(--danger-soft);color:var(--danger);}
-  .cat-latrocinio{background:rgba(92,26,26,.12);color:#5C1A1A;}
-  .cat-assalto{background:rgba(194,102,11,.1);color:#C2660B;}
-  .cat-tiros{background:rgba(184,38,107,.1);color:#B8266B;}
-  .cat-roubo{background:rgba(14,124,134,.1);color:#0E7C86;}
-  .cat-apreensao{background:rgba(59,85,104,.12);color:#3B5568;}
   .cat-alerta-corporativo{background:var(--corp-soft);color:var(--corp);}
   .cat-manifestacao{background:var(--ok-soft);color:var(--ok);}
   .cat-outros{background:var(--bg-elevated);color:var(--text-muted);}
@@ -232,7 +227,11 @@
     transition:transform .18s ease, box-shadow .18s ease;
   }
   .template-card:hover{transform:translateY(-3px);box-shadow:0 16px 34px rgba(14,30,63,.18);}
-  .template-card .tpl-logo{width:78px;height:28px;object-fit:contain;opacity:.95;flex:none;}
+  .template-card .tpl-icon{
+    position:absolute;right:-10px;bottom:-14px;opacity:.16;
+    width:110px;height:110px;
+  }
+  .template-card .tpl-icon svg{width:100%;height:100%;}
   .template-card .tpl-top{display:flex;align-items:flex-start;justify-content:space-between;position:relative;z-index:1;}
   .template-card .tpl-icon-small{width:34px;height:34px;border-radius:9px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;flex:none;}
   .template-card .tpl-icon-small svg{width:18px;height:18px;}
@@ -242,7 +241,6 @@
 
   /* ============ INFORMES (templates padronizados) ============ */
   .informe-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden;margin-bottom:18px;box-shadow:0 2px 10px rgba(14,30,63,.05);}
-  .informe-boletim-render{margin-bottom:18px;}
   .informe-head{padding:14px 20px;color:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
   .informe-head-left{display:flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;}
   .informe-head-left svg{width:15px;height:15px;flex:none;}
@@ -278,16 +276,6 @@
   .informe-reco .lbl{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;margin-bottom:5px;}
   .informe-reco .txt{font-size:13.5px;line-height:1.6;color:var(--text);}
   .informe-foot{padding:11px 20px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
-  .informe-day{margin-bottom:22px;}
-  .informe-day-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--navy);}
-  .informe-day-head::after{content:'';height:1px;flex:1;background:var(--border);}
-  .informe-mini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px;}
-  .informe-mini-card{display:flex;align-items:stretch;min-height:92px;padding:0;border:1px solid var(--border);border-radius:12px;background:var(--bg-card);color:var(--text);text-align:left;overflow:hidden;cursor:pointer;box-shadow:0 2px 8px rgba(14,30,63,.04);transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;}
-  .informe-mini-card:hover{transform:translateY(-2px);border-color:var(--steel);box-shadow:0 8px 18px rgba(14,30,63,.1);}
-  .informe-mini-thumb{width:88px;flex:none;object-fit:cover;background:var(--bg-elevated);}
-  .informe-mini-content{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:12px 13px;min-width:0;}
-  .informe-mini-title{font-family:var(--font-display);font-size:16px;font-weight:600;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-  .informe-mini-summary{font-size:11.5px;line-height:1.35;color:var(--text-muted);display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
 
   .img-multi-preview{display:flex;flex-wrap:wrap;gap:8px;}
   .img-multi-item{position:relative;width:76px;height:76px;border-radius:9px;overflow:hidden;border:1px solid var(--border);flex:none;}
@@ -358,14 +346,20 @@
     background:#fff;
   }
 
-  /* ============ EDITOR (página dentro da aplicação) ============ */
-  .drawer-backdrop{display:none;}
-  .editor-drawer{
-    display:none;flex-direction:column;
-    background:var(--bg-panel);border:1px solid var(--border);border-radius:var(--radius-lg);
-    box-shadow:0 2px 10px rgba(14,30,63,.06);
+  /* ============ EDITOR DRAWER ============ */
+  .drawer-backdrop{
+    position:fixed;inset:0;background:rgba(14,20,32,.35);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .25s ease;z-index:90;
   }
-  .editor-drawer:not([hidden]){display:flex;}
+  .drawer-backdrop.open{opacity:1;pointer-events:auto;}
+  .editor-drawer{
+    position:fixed;top:0;right:0;bottom:0;width:min(480px,100vw);
+    background:var(--bg-panel);border-left:1px solid var(--border);
+    box-shadow:-20px 0 50px rgba(14,30,63,.12);
+    transform:translateX(100%);transition:transform .3s cubic-bezier(.2,.8,.3,1);
+    z-index:95;display:flex;flex-direction:column;
+  }
+  .editor-drawer.open{transform:translateX(0);}
   .drawer-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px;border-bottom:1px solid var(--border);}
   .drawer-head h3{font-family:var(--font-display);font-size:17px;font-weight:600;margin:0;display:flex;align-items:center;gap:9px;color:var(--navy);}
   .drawer-tabs{display:flex;gap:4px;padding:12px 22px 0;border-bottom:1px solid var(--border);}
@@ -378,95 +372,6 @@
   .drawer-body{flex:1;overflow-y:auto;padding:20px 22px 100px;}
   .drawer-pane{display:none;flex-direction:column;gap:14px;}
   .drawer-pane.active{display:flex;}
-  .gerenciar-subpane{display:none;flex-direction:column;gap:14px;}
-  .gerenciar-subpane.active{display:flex;}
-
-  /* ============ TEMPLATE VISUAL DO BOLETIM (Operações Policiais) — escopado, não vaza pro resto do site ============ */
-  :is(#informe-boletim-canvas, .informe-boletim-render){
-    --preto:#000000; --azul:#0e1e3f; --vinho:#66252d; --cinza:#eaeaea; --branco:#ffffff;
-    font-family:'Inter',Arial,sans-serif; color:var(--preto);
-  }
-  :is(#informe-boletim-canvas, .informe-boletim-render) .boletim{
-    max-width:760px;margin:0 auto;background:linear-gradient(180deg,#ffffff 0%, #fbfbfd 100%);
-    border-radius:14px;overflow:hidden;box-shadow:0 18px 40px rgba(14,30,63,0.16), 0 2px 8px rgba(14,30,63,0.08);
-  }
-  :is(#informe-boletim-canvas, .informe-boletim-render) .boletim-faixa-topo{height:5px;background:linear-gradient(90deg, var(--vinho) 0%, var(--azul) 100%);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .cabecalho-capa{
-    position:relative;min-height:300px;background-color:var(--preto);
-    background-image:linear-gradient(90deg, rgba(0,0,0,0.96) 0%, rgba(0,0,0,0.90) 38%, rgba(0,0,0,0.45) 68%, rgba(0,0,0,0.10) 100%),
-      var(--foto-capa, repeating-linear-gradient(135deg, #1a1a1a 0 18px, #101010 18px 36px));
-    background-size:cover, cover;background-position:center, center;overflow:hidden;color:var(--branco);
-  }
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-chevrons{position:absolute;left:0;top:0;bottom:0;width:26px;z-index:2;display:flex;flex-direction:column;justify-content:space-evenly;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-chevrons span{display:block;height:52px;background:var(--vinho);clip-path:polygon(0 0, 100% 22%, 100% 78%, 0 100%, 28% 50%);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-chevrons span:nth-child(even){opacity:0.55;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-conteudo{position:relative;z-index:3;padding:30px 36px 28px 40px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-logo{font-family:'Poppins',sans-serif;font-weight:800;font-size:19px;letter-spacing:0.5px;margin-bottom:16px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-logo .movi{color:#e2725b;} :is(#informe-boletim-canvas, .informe-boletim-render) .capa-logo .safe{color:#6f8fc9;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-eyebrow{font-family:'Oswald',sans-serif;font-weight:600;font-size:15px;letter-spacing:2px;text-transform:uppercase;margin-bottom:2px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-titulo{font-family:'Oswald',sans-serif;font-style:italic;font-weight:700;font-size:56px;line-height:0.92;text-transform:uppercase;margin-bottom:10px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-linha-accent{width:150px;height:5px;margin-bottom:14px;background:repeating-linear-gradient(115deg, var(--vinho) 0 8px, transparent 8px 14px);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-sub{font-family:'Oswald',sans-serif;font-weight:700;font-size:38px;text-transform:uppercase;line-height:1;margin-bottom:14px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-linha-accent-fina{width:90px;height:3px;margin-bottom:10px;background:repeating-linear-gradient(115deg, var(--vinho) 0 6px, transparent 6px 11px);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .capa-local{font-family:'Oswald',sans-serif;font-weight:600;font-size:19px;letter-spacing:1px;text-transform:uppercase;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .info-secundaria{background:var(--preto);color:var(--branco);padding:16px 32px 20px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .confidencial{font-size:11px;opacity:0.75;line-height:1.5;margin-bottom:12px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .meta-linha{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:12.5px;opacity:0.95;margin-bottom:12px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .meta-linha b{font-weight:600;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .titulo-boletim{font-family:'Poppins',sans-serif;font-weight:700;font-size:20px;line-height:1.3;opacity:0.95;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .faixa-alerta{display:flex;align-items:center;gap:8px;background:linear-gradient(90deg,#fff3f0 0%, #fbe6e1 100%);border-bottom:1px solid #f0d8d3;padding:10px 32px;font-size:12.5px;font-weight:600;color:var(--vinho);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .faixa-alerta .ponto{width:9px;height:9px;border-radius:50%;background:var(--vinho);flex-shrink:0;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .corpo{padding:28px 32px 8px;background:linear-gradient(180deg, #ffffff 0%, #fafbfd 100%);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .resumo{font-size:15px;line-height:1.65;color:#1a1a1a;background:linear-gradient(135deg,#eef1f7 0%, #e4e9f3 100%);border-left:4px solid var(--azul);padding:14px 16px;border-radius:6px;margin-bottom:26px;box-shadow:0 2px 8px rgba(14,30,63,0.05);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .resumo b{color:var(--azul);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao{margin-bottom:26px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao-titulo{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;letter-spacing:0.4px;text-transform:uppercase;color:var(--azul);display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;position:relative;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao-titulo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg, var(--azul) 0%, var(--vinho) 100%);opacity:0.35;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao-titulo .icone{width:22px;height:22px;border-radius:6px;background:linear-gradient(135deg, var(--azul) 0%, var(--vinho) 100%);color:var(--branco);display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao p{font-size:14px;line-height:1.7;color:#252525;margin-bottom:10px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao ul{list-style:none;padding:0;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao li{font-size:13.5px;line-height:1.6;padding:8px 0 8px 20px;position:relative;border-bottom:1px dashed #e2e2e2;color:#2a2a2a;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao li:last-child{border-bottom:none;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao li::before{content:"";position:absolute;left:0;top:15px;width:7px;height:7px;border-radius:50%;background:var(--vinho);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .secao li b{color:var(--preto);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .mapa-upload-wrap{position:relative;margin:12px 0 16px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .imagem-mapa{width:100%;border-radius:10px;border:1px solid #e2e2e2;display:none;box-shadow:0 4px 14px rgba(14,30,63,0.08);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .mapa-placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;min-height:170px;border:2px dashed #c3c9d6;border-radius:10px;background:linear-gradient(135deg, #f3f5f9 0%, #e6eaf2 100%);color:#6b7387;font-size:13px;font-weight:600;text-align:center;cursor:pointer;padding:20px;transition:background .15s, border-color .15s;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .mapa-placeholder:hover{background:linear-gradient(135deg, #eaeef5 0%, #dde3ee 100%);border-color:#a9b1c4;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .mapa-placeholder-icone{font-size:30px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .legenda-fonte{font-size:11px;color:#777;font-style:italic;margin-top:-8px;margin-bottom:16px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .grade-info{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:6px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .card-info{background:linear-gradient(135deg, #f2f4f8 0%, #e6eaf1 100%);border-radius:8px;padding:12px 14px;box-shadow:0 2px 6px rgba(14,30,63,0.05);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .card-info span{display:block;font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;color:#666;font-weight:600;margin-bottom:4px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .card-info strong{font-size:14px;color:var(--preto);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .orientacoes{background:linear-gradient(135deg, #eef2fb 0%, #e1e8f6 100%);border-left:4px solid var(--azul);border-radius:8px;padding:14px 16px;box-shadow:0 2px 8px rgba(14,30,63,0.05);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .orientacoes li::before{background:var(--azul);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .fonte-oficial{font-size:12px;color:#555;margin-top:4px;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .fonte-oficial a{color:var(--azul);text-decoration:none;font-weight:600;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .aviso-monitoramento{margin-top:22px;margin-bottom:24px;padding:14px 16px;border-radius:8px;background:linear-gradient(135deg, #f4f0ee 0%, #efe3e1 100%);border-left:4px solid var(--vinho);font-size:13px;line-height:1.6;color:#3a2c2c;box-shadow:0 2px 8px rgba(102,37,45,0.06);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .aviso-monitoramento b{color:var(--vinho);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .rodape{position:relative;background:var(--preto);min-height:150px;overflow:hidden;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .rodape-imagem{display:block;width:100%;height:150px;object-fit:cover;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .botao-foto-rodape{top:16px;right:18px;background:rgba(255,255,255,0.1);border-color:rgba(255,255,255,0.35);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .botao-foto-rodape:hover{background:rgba(255,255,255,0.22);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .editavel{outline:1px dashed transparent;border-radius:4px;padding:2px 5px;margin:-2px -5px;cursor:text;transition:background .15s, outline-color .15s;}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .editavel:hover{outline-color:rgba(14,30,63,0.35);background:rgba(14,30,63,0.05);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .editavel:focus{outline:1px dashed rgba(14,30,63,0.6);background:rgba(14,30,63,0.07);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .botao-foto{
-    position:absolute;top:16px;right:18px;z-index:4;background:rgba(0,0,0,0.55);border:1px solid rgba(255,255,255,0.4);
-    color:var(--branco);font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;padding:7px 12px;border-radius:20px;
-    cursor:pointer;display:flex;align-items:center;gap:6px;
-  }
-  :is(#informe-boletim-canvas, .informe-boletim-render) .botao-foto:hover{background:rgba(0,0,0,0.75);}
-  :is(#informe-boletim-canvas, .informe-boletim-render) .botao-foto-mapa{display:none;top:12px;right:12px;}
-  @media (max-width:520px){
-    :is(#informe-boletim-canvas, .informe-boletim-render) .grade-info{grid-template-columns:1fr;}
-    :is(#informe-boletim-canvas, .informe-boletim-render) .capa-conteudo, :is(#informe-boletim-canvas, .informe-boletim-render) .info-secundaria, :is(#informe-boletim-canvas, .informe-boletim-render) .corpo{padding-left:20px;padding-right:20px;}
-    :is(#informe-boletim-canvas, .informe-boletim-render) .faixa-alerta{padding-left:20px;padding-right:20px;}
-    :is(#informe-boletim-canvas, .informe-boletim-render) .capa-titulo{font-size:40px;}
-    :is(#informe-boletim-canvas, .informe-boletim-render) .capa-sub{font-size:28px;}
-    :is(#informe-boletim-canvas, .informe-boletim-render) .titulo-boletim{font-size:17px;}
-  }
   .field{display:flex;flex-direction:column;gap:6px;}
   .field label{font-size:11.5px;color:var(--text-dim);font-family:var(--font-mono);text-transform:uppercase;letter-spacing:.05em;}
   .field input[type=text], .field input[type=url], .field input[type=date], .field textarea, .field select{
@@ -512,45 +417,6 @@
   .metric-bar-track{height:6px;border-radius:999px;background:var(--border);overflow:hidden;}
   .metric-bar-fill{height:100%;border-radius:999px;background:linear-gradient(90deg, var(--accent-2), var(--accent));}
 
-  /* ---- Dashboard de métricas (cidade/bairro/categoria — barras + rosca) ---- */
-  .dash-card{background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:10px;}
-  .dash-card-title{font-size:11px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em;margin-bottom:12px;font-family:var(--font-mono);}
-  .dash-body{display:flex;gap:22px;flex-wrap:wrap;align-items:center;}
-  .dash-bars{flex:1 1 220px;min-width:200px;display:flex;flex-direction:column;gap:7px;}
-  .dash-bar-row{display:flex;align-items:center;gap:8px;}
-  .dash-bar-label{width:104px;flex:none;font-size:11px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .dash-bar-track{flex:1;height:12px;border-radius:4px;background:var(--border);overflow:hidden;}
-  .dash-bar-fill{height:100%;border-radius:4px;}
-  .dash-bar-value{width:22px;flex:none;text-align:right;font-family:var(--font-mono);font-size:10.5px;color:var(--text-dim);}
-  .dash-donut-wrap{display:flex;align-items:center;gap:14px;flex:none;}
-  .dash-donut{width:104px;height:104px;border-radius:50%;position:relative;flex:none;}
-  .dash-donut::after{content:"";position:absolute;inset:26%;background:var(--bg-panel);border-radius:50%;}
-  .dash-legend{display:flex;flex-direction:column;gap:5px;}
-  .dash-legend-item{display:flex;align-items:center;gap:6px;font-size:10.5px;color:var(--text-dim);white-space:nowrap;}
-  .dash-legend-dot{width:8px;height:8px;border-radius:2px;flex:none;}
-  .dash-secao-titulo{font-size:12.5px;font-weight:700;color:var(--accent);margin:18px 0 8px;font-family:var(--font-display);}
-
-  /* ---- Exportar Métricas em PDF (window.print, sem depender de lib externa) ---- */
-  @media print{
-    body.imprimindo-metricas .main-header,
-    body.imprimindo-metricas .hero-carousel,
-    body.imprimindo-metricas .filter-bar,
-    body.imprimindo-metricas .sidebar,
-    body.imprimindo-metricas .sidebar-backdrop,
-    body.imprimindo-metricas .fab-editor,
-    body.imprimindo-metricas .drawer-head,
-    body.imprimindo-metricas .drawer-tabs,
-    body.imprimindo-metricas #met-exportar-btn,
-    body.imprimindo-metricas footer{display:none !important;}
-    body.imprimindo-metricas .editor-drawer{border:none !important;box-shadow:none !important;}
-    body.imprimindo-metricas .dash-donut,
-    body.imprimindo-metricas .dash-bar-fill,
-    body.imprimindo-metricas .metric-bar-fill,
-    body.imprimindo-metricas .dash-legend-dot{
-      -webkit-print-color-adjust:exact;print-color-adjust:exact;
-    }
-  }
-
   .fab-editor{
     display:none;position:fixed;right:20px;bottom:20px;z-index:80;
     background:var(--accent);color:#fff;border:none;border-radius:999px;
@@ -580,38 +446,6 @@
   }
   .share-opt svg{flex:none;color:var(--text-dim);}
   .share-opt:hover{background:var(--bg-elevated);}
-
-  /* ---- Link de boletim único (?informe=ID): esconde a plataforma, mostra só o boletim ---- */
-  body.boletim-unico .main-header,
-  body.boletim-unico .hero-carousel,
-  body.boletim-unico .filter-bar,
-  body.boletim-unico .sidebar,
-  body.boletim-unico .sidebar-backdrop,
-  body.boletim-unico .fab-editor,
-  body.boletim-unico #informes-back,
-  body.boletim-unico #informes-head{display:none !important;}
-  body.boletim-unico main{padding-top:28px;}
-
-  /* ---- Gate de acesso: sem sessão e sem ?informe=ID, esconde a plataforma inteira ---- */
-  .acesso-gate{display:none;}
-  .acesso-gate:not([hidden]){
-    display:flex;align-items:center;justify-content:center;
-    min-height:100vh;padding:24px;
-  }
-  .acesso-gate form{
-    width:100%;max-width:340px;background:#fff;border:1px solid var(--border);
-    border-radius:var(--radius-lg);padding:30px 26px;display:flex;flex-direction:column;gap:14px;
-    box-shadow:0 8px 30px rgba(14,30,63,.1);text-align:center;
-  }
-  .acesso-gate .field{text-align:left;}
-  body.acesso-bloqueado .main-header,
-  body.acesso-bloqueado .hero-carousel,
-  body.acesso-bloqueado .filter-bar,
-  body.acesso-bloqueado .sidebar-backdrop,
-  body.acesso-bloqueado main,
-  body.acesso-bloqueado footer,
-  body.acesso-bloqueado .fab-editor,
-  body.acesso-bloqueado .toast{display:none !important;}
 
   footer{border-top:1px solid var(--border);padding:26px 0;color:var(--text-dim);font-size:11.5px;font-family:var(--font-mono);background:#fff;position:relative;z-index:1;}
   footer .container{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;}
@@ -787,27 +621,6 @@
 </head>
 <body>
 
-  <!-- GATE DE ACESSO — cobre a plataforma inteira quando não há sessão e a URL
-       não é um link de boletim único (?informe=ID, que continua público). -->
-  <div class="acesso-gate" id="acesso-gate" hidden>
-    <form id="acesso-form">
-      <div class="brand-text" style="margin-bottom:6px;">
-        <div class="name" style="font-size:28px;">MOVINEWS</div>
-        <div class="tag">Acesso restrito — informe suas credenciais</div>
-      </div>
-      <div class="field">
-        <label>E-mail</label>
-        <input type="text" id="acesso-email" required placeholder="voce@movisafe-amlat.com" autocomplete="username">
-      </div>
-      <div class="field">
-        <label>Senha</label>
-        <input type="password" id="acesso-senha" required placeholder="••••••••" autocomplete="current-password">
-      </div>
-      <div id="acesso-error" style="display:none;color:#ff7c85;font-size:12px;font-family:var(--font-mono);"></div>
-      <button type="submit" class="submit-btn">Entrar</button>
-    </form>
-  </div>
-
   <!-- HEADER -->
   <header class="main-header">
     <div class="container">
@@ -929,361 +742,6 @@
         <div id="archive-list"></div>
       </section>
 
-      <!-- EDITOR (página dentro da aplicação, antes era um menu suspenso) -->
-      <aside class="editor-drawer" id="editor-drawer" hidden>
-        <div class="drawer-head">
-          <h3>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
-            Painel do Editor
-          </h3>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <button class="icon-btn" id="logout-btn" title="Sair" hidden>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
-            </button>
-            <button class="icon-btn" id="close-editor-btn">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- LOGIN GATE -->
-        <div id="editor-login" style="padding:28px 22px;display:flex;flex-direction:column;gap:14px;">
-          <form id="login-form" style="display:flex;flex-direction:column;gap:14px;">
-            <div class="field">
-              <label>E-mail</label>
-              <input type="text" id="login-email" required placeholder="voce@movisafe-amlat.com" autocomplete="username">
-            </div>
-            <div class="field">
-              <label>Senha</label>
-              <input type="password" id="login-senha" required placeholder="••••••••" autocomplete="current-password">
-            </div>
-            <div id="login-error" style="display:none;color:#ff7c85;font-size:12px;font-family:var(--font-mono);"></div>
-            <button type="submit" class="submit-btn">Entrar</button>
-          </form>
-        </div>
-
-        <div class="drawer-tabs" id="editor-tabs" hidden>
-          <button class="drawer-tab active" data-pane="pane-materia">Nova Notícia</button>
-          <button class="drawer-tab" data-pane="pane-manif">Nova Manifestação</button>
-          <button class="drawer-tab" data-pane="pane-informe">Boletim</button>
-          <button class="drawer-tab" data-pane="pane-gerenciar">Gerenciar</button>
-          <button class="drawer-tab admin-only" data-pane="pane-validacao" hidden>Validação</button>
-          <button class="drawer-tab admin-only" data-pane="pane-clientes" hidden>Clientes</button>
-          <button class="drawer-tab admin-only" data-pane="pane-metricas" hidden>Métricas</button>
-          <button class="drawer-tab admin-only" data-pane="pane-aparencia" hidden>Aparência</button>
-        </div>
-        <div class="drawer-body" id="editor-body" hidden>
-
-          <!-- NOVA NOTÍCIA / EDITAR NOTÍCIA -->
-          <form class="drawer-pane active" id="pane-materia">
-            <input type="hidden" id="f-edit-id" value="">
-            <div class="form-note" id="edit-mode-banner" style="display:none;background:var(--accent-soft);color:var(--accent);padding:9px 11px;border-radius:8px;font-weight:600;">Editando notícia publicada</div>
-            <div class="field">
-              <label>Título da notícia</label>
-              <input type="text" id="f-titulo" required placeholder="Ex: Operação policial na Cidade de Deus">
-            </div>
-            <div class="field">
-              <label>Imagem de capa</label>
-              <input type="file" id="f-imagem-file" accept="image/*" required>
-            </div>
-            <div class="img-preview" id="f-imagem-preview">Pré-visualização da capa</div>
-            <div class="form-note" id="f-imagem-keep-note" style="display:none;">Capa atual será mantida.</div>
-            <div class="field">
-              <label>Link da notícia original</label>
-              <input type="url" id="f-link" required placeholder="https://veiculo.com/noticia">
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label>Categoria</label>
-                <input type="text" id="f-categoria-busca" list="lista-categorias" required autocomplete="off" placeholder="Digite para buscar (ex: assalto, alagamento...)">
-                <datalist id="lista-categorias"></datalist>
-                <input type="hidden" id="f-categoria">
-              </div>
-              <div class="field">
-                <label>Data da notícia</label>
-                <input type="date" id="f-data" required>
-              </div>
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label>Cidade</label>
-                <input type="text" id="f-cidade" required placeholder="Ex: Rio de Janeiro">
-              </div>
-              <div class="field">
-                <label>UF</label>
-                <input type="text" id="f-uf" required maxlength="2" placeholder="RJ" style="text-transform:uppercase;">
-              </div>
-            </div>
-            <div class="field">
-              <label>Bairro</label>
-              <input type="text" id="f-bairro" placeholder="Ex: Copacabana">
-            </div>
-            <div class="field">
-              <label>Resumo</label>
-              <textarea id="f-resumo" rows="3" required placeholder="Breve resumo da notícia..."></textarea>
-            </div>
-            <div class="field" id="operador-nome-field" style="display:none;">
-              <label>Nome de quem está inserindo</label>
-              <input type="text" id="f-operador-nome" placeholder="Seu nome">
-            </div>
-            <div class="checkbox-field">
-              <input type="checkbox" id="f-destaque">
-              <label for="f-destaque">Marcar como destaque de hoje</label>
-            </div>
-            <button type="submit" class="submit-btn" id="f-submit-btn">Publicar notícia</button>
-            <button type="button" class="chip" id="f-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
-          </form>
-
-          <!-- NOVA MANIFESTAÇÃO -->
-          <form class="drawer-pane" id="pane-manif">
-            <div class="field">
-              <label>Título / Motivo</label>
-              <input type="text" id="m-titulo" required placeholder="Ex: Ato público estadual dos professores">
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label>Data</label>
-                <input type="date" id="m-data" required>
-              </div>
-              <div class="field">
-                <label>Nível de impacto</label>
-                <select id="m-impacto" required>
-                  <option value="alto">Alto</option>
-                  <option value="medio" selected>Médio</option>
-                  <option value="baixo">Baixo</option>
-                </select>
-              </div>
-            </div>
-            <div class="field">
-              <label>Região / Cidade</label>
-              <input type="text" id="m-regiao" required placeholder="Ex: Rio de Janeiro - Centro">
-            </div>
-            <div class="field">
-              <label>Local de concentração</label>
-              <input type="text" id="m-local" required placeholder="Ex: Praça Marechal Deodoro">
-            </div>
-            <div class="field">
-              <label>Descrição</label>
-              <textarea id="m-descricao" rows="3" required placeholder="Detalhes, rotas previstas, orientações..."></textarea>
-            </div>
-            <button type="submit" class="submit-btn">Publicar manifestação</button>
-          </form>
-
-          <!-- BOLETIM (template padronizado) -->
-          <form class="drawer-pane" id="pane-informe">
-            <input type="hidden" id="i-edit-id" value="">
-            <div class="form-note" id="informe-edit-banner" style="display:none;background:var(--accent-soft);color:var(--accent);padding:9px 11px;border-radius:8px;font-weight:600;">Editando boletim publicado</div>
-            <div class="field">
-              <label>Template</label>
-              <select id="i-tipo" required></select>
-            </div>
-            <div class="field">
-              <label>Título</label>
-              <input type="text" id="i-titulo" required placeholder="Ex: Interdição na Av. Brasil sentido Centro">
-            </div>
-            <div class="field">
-              <label>Data</label>
-              <input type="date" id="i-data" required>
-            </div>
-            <div class="field-row">
-              <div class="field">
-                <label>Cidade</label>
-                <input type="text" id="i-cidade" placeholder="Ex: Rio de Janeiro">
-              </div>
-              <div class="field">
-                <label>Bairro</label>
-                <input type="text" id="i-bairro" placeholder="Ex: Copacabana">
-              </div>
-            </div>
-            <div id="informe-campos-genericos">
-              <div class="field">
-                <label>Imagens</label>
-                <input type="file" id="i-imagens-file" accept="image/*" multiple>
-              </div>
-              <div class="img-multi-preview" id="i-imagens-preview"></div>
-              <div class="field">
-                <label>Resumo (abertura)</label>
-                <textarea id="i-resumo" rows="2" placeholder="Frase de abertura, resume o essencial..."></textarea>
-              </div>
-              <div class="field">
-                <label>Corpo</label>
-                <textarea id="i-corpo" rows="6" placeholder="Desenvolvimento do boletim..."></textarea>
-              </div>
-              <div class="field">
-                <label>Imagem no meio do texto (opcional)</label>
-                <input type="file" id="i-imagem-meio-file" accept="image/*">
-              </div>
-              <div class="img-preview" id="i-imagem-meio-preview">Sem imagem</div>
-              <div class="field">
-                <label>Destaque / Citação</label>
-                <textarea id="i-destaque" rows="2" placeholder="Opcional"></textarea>
-              </div>
-              <div class="field">
-                <label>Recomendação</label>
-                <textarea id="i-recomendacao" rows="2" placeholder="Opcional"></textarea>
-              </div>
-            </div>
-
-            <!-- EDITOR VISUAL DO BOLETIM (template pré-moldado por tipo — ver BOLETIM_TEMPLATES) -->
-            <div id="informe-boletim-editor" style="display:none;">
-              <div class="form-note" style="margin-bottom:4px;">Edite o boletim clicando direto nos campos e trocando as imagens.</div>
-              <div id="informe-boletim-canvas" style="background:#dfe3ec;border-radius:10px;padding:16px;"></div>
-            </div>
-
-            <div class="field" id="operador-nome-field-informe" style="display:none;">
-              <label>Nome de quem está inserindo</label>
-              <input type="text" id="i-operador-nome" placeholder="Seu nome">
-            </div>
-            <button type="submit" class="submit-btn" id="i-submit-btn">Publicar boletim</button>
-            <button type="button" class="chip" id="i-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
-          </form>
-
-          <!-- GERENCIAR -->
-          <div class="drawer-pane" id="pane-gerenciar">
-            <button type="button" class="submit-btn admin-only" id="export-csv-btn" hidden style="background:var(--navy);box-shadow:0 8px 20px var(--navy-glow);">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
-              Exportar planilha (CSV)
-            </button>
-            <div class="drawer-tabs" id="gerenciar-subtabs" style="padding:0;margin-bottom:2px;">
-              <button type="button" class="drawer-tab active" data-subpane="gerenciar-noticias">Notícias</button>
-              <button type="button" class="drawer-tab" data-subpane="gerenciar-manif">Manifestações</button>
-              <button type="button" class="drawer-tab" data-subpane="gerenciar-boletins">Boletins</button>
-            </div>
-            <div class="gerenciar-subpane active" id="gerenciar-noticias">
-              <div class="field">
-                <label>Notícias publicadas</label>
-              </div>
-              <div class="manage-list" id="manage-materias"></div>
-            </div>
-            <div class="gerenciar-subpane" id="gerenciar-manif">
-              <div class="field">
-                <label>Manifestações publicadas</label>
-              </div>
-              <div class="manage-list" id="manage-manif"></div>
-            </div>
-            <div class="gerenciar-subpane" id="gerenciar-boletins">
-              <div class="field">
-                <label>Boletins publicados</label>
-              </div>
-              <div class="manage-list" id="manage-informes"></div>
-            </div>
-          </div>
-
-          <!-- VALIDAÇÃO (minerador automático — admin) -->
-          <div class="drawer-pane admin-only" id="pane-validacao" hidden>
-            <button type="button" class="submit-btn" id="mine-btn">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-              Minerar novas notícias
-            </button>
-            <div class="form-note" id="mine-status"></div>
-            <div class="field" style="margin-top:8px;">
-              <label>Aguardando validação</label>
-            </div>
-            <div class="manage-list" id="pending-list"></div>
-          </div>
-
-          <!-- CLIENTES (admin) -->
-          <div class="drawer-pane admin-only" id="pane-clientes" hidden>
-            <form id="form-cliente" style="display:flex;flex-direction:column;gap:14px;">
-              <div class="field">
-                <label>Nome da empresa</label>
-                <input type="text" id="c-nome" required placeholder="Ex: SBM Offshore">
-              </div>
-              <div class="field">
-                <label>Áreas de interesse</label>
-                <input type="text" id="c-areas" required placeholder="Ex: Santos, Vitória, Rio de Janeiro">
-              </div>
-              <button type="submit" class="submit-btn">Adicionar cliente</button>
-            </form>
-            <div class="field" style="margin-top:18px;">
-              <label>Clientes cadastrados</label>
-            </div>
-            <div class="manage-list" id="manage-clientes"></div>
-          </div>
-
-          <!-- MÉTRICAS (mini-dashboard admin: notícias por operador) -->
-          <div class="drawer-pane admin-only" id="pane-metricas" hidden>
-            <div class="field-row">
-              <div class="field">
-                <label>De</label>
-                <input type="date" id="met-de">
-              </div>
-              <div class="field">
-                <label>Até</label>
-                <input type="date" id="met-ate">
-              </div>
-            </div>
-            <button type="button" class="chip" id="met-exportar-btn" style="margin-top:10px;justify-content:center;padding:10px;">🖨️ Exportar PDF</button>
-            <div class="field" style="margin-top:6px;">
-              <label>Notícias por operador</label>
-            </div>
-            <div id="metricas-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-            <div class="form-note" id="metricas-total" style="margin-top:6px;"></div>
-
-            <div class="field" style="margin-top:16px;">
-              <label>Boletins por operador</label>
-            </div>
-            <div id="metricas-boletim-list" style="display:flex;flex-direction:column;gap:10px;"></div>
-            <div class="form-note" id="metricas-boletim-total" style="margin-top:6px;"></div>
-
-            <div class="dash-secao-titulo">Dashboard — Notícias</div>
-            <div id="dash-noticias-categoria"></div>
-            <div id="dash-noticias-cidade"></div>
-            <div id="dash-noticias-bairro"></div>
-
-            <div class="dash-secao-titulo">Dashboard — Boletins</div>
-            <div id="dash-boletins-tipo"></div>
-            <div id="dash-boletins-cidade"></div>
-            <div id="dash-boletins-bairro"></div>
-          </div>
-
-          <!-- APARÊNCIA (admin): carrossel do topo + capas dos templates -->
-          <div class="drawer-pane admin-only" id="pane-aparencia" hidden>
-
-            <div class="field"><label>Carrossel do Topo</label></div>
-            <form id="form-hero" style="display:flex;flex-direction:column;gap:14px;">
-              <input type="hidden" id="h-edit-id" value="">
-              <div class="field">
-                <label>Imagem</label>
-                <input type="file" id="h-imagem-file" accept="image/*">
-              </div>
-              <div class="img-preview" id="h-imagem-preview">Pré-visualização</div>
-              <div class="field">
-                <label>Selo (eyebrow)</label>
-                <input type="text" id="h-eyebrow" placeholder="Ex: Movi SOS">
-              </div>
-              <div class="field">
-                <label>Título</label>
-                <input type="text" id="h-titulo" required placeholder="Ex: Alerta em tempo real">
-              </div>
-              <div class="field">
-                <label>Subtítulo</label>
-                <input type="text" id="h-subtitulo" placeholder="Ex: Botão de pânico conectado à central 24h">
-              </div>
-              <div class="field-row">
-                <div class="field">
-                  <label>Texto do botão</label>
-                  <input type="text" id="h-cta-label" placeholder="Ex: Saiba mais">
-                </div>
-                <div class="field">
-                  <label>Link do botão</label>
-                  <input type="url" id="h-cta-url" placeholder="https://...">
-                </div>
-              </div>
-              <button type="submit" class="submit-btn" id="h-submit-btn">Adicionar slide</button>
-              <button type="button" class="chip" id="h-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
-            </form>
-            <div class="field" style="margin-top:16px;"><label>Slides cadastrados</label></div>
-            <div class="manage-list" id="manage-hero"></div>
-
-            <div class="field" style="margin-top:26px;"><label>Capas dos Templates</label></div>
-            <div id="manage-template-covers" style="display:flex;flex-direction:column;gap:12px;"></div>
-
-          </div>
-
-        </div>
-      </aside>
-
       </div><!-- /content-col -->
 
     </div>
@@ -1295,6 +753,317 @@
       <span>Fonte das matérias: veículos de imprensa terceiros, referenciados via link original</span>
     </div>
   </footer>
+
+  <!-- EDITOR DRAWER -->
+  <div class="drawer-backdrop" id="drawer-backdrop"></div>
+  <aside class="editor-drawer" id="editor-drawer">
+    <div class="drawer-head">
+      <h3>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+        Painel do Editor
+      </h3>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button class="icon-btn" id="logout-btn" title="Sair" hidden>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+        </button>
+        <button class="icon-btn" id="close-editor-btn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- LOGIN GATE -->
+    <div id="editor-login" style="padding:28px 22px;display:flex;flex-direction:column;gap:14px;">
+      <form id="login-form" style="display:flex;flex-direction:column;gap:14px;">
+        <div class="field">
+          <label>E-mail</label>
+          <input type="text" id="login-email" required placeholder="voce@movisafe-amlat.com" autocomplete="username">
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="login-senha" required placeholder="••••••••" autocomplete="current-password">
+        </div>
+        <div id="login-error" style="display:none;color:#ff7c85;font-size:12px;font-family:var(--font-mono);"></div>
+        <button type="submit" class="submit-btn">Entrar</button>
+      </form>
+    </div>
+
+    <div class="drawer-tabs" id="editor-tabs" hidden>
+      <button class="drawer-tab active" data-pane="pane-materia">Nova Matéria</button>
+      <button class="drawer-tab" data-pane="pane-manif">Nova Manifestação</button>
+      <button class="drawer-tab" data-pane="pane-informe">Informe</button>
+      <button class="drawer-tab" data-pane="pane-gerenciar">Gerenciar</button>
+      <button class="drawer-tab admin-only" data-pane="pane-validacao" hidden>Validação</button>
+      <button class="drawer-tab admin-only" data-pane="pane-clientes" hidden>Clientes</button>
+      <button class="drawer-tab admin-only" data-pane="pane-metricas" hidden>Métricas</button>
+      <button class="drawer-tab admin-only" data-pane="pane-aparencia" hidden>Aparência</button>
+    </div>
+    <div class="drawer-body" id="editor-body" hidden>
+
+      <!-- NOVA MATÉRIA / EDITAR MATÉRIA -->
+      <form class="drawer-pane active" id="pane-materia">
+        <input type="hidden" id="f-edit-id" value="">
+        <div class="form-note" id="edit-mode-banner" style="display:none;background:var(--accent-soft);color:var(--accent);padding:9px 11px;border-radius:8px;font-weight:600;">Editando matéria publicada</div>
+        <div class="field">
+          <label>Título da matéria</label>
+          <input type="text" id="f-titulo" required placeholder="Ex: Operação policial na Cidade de Deus">
+        </div>
+        <div class="field">
+          <label>Imagem de capa</label>
+          <input type="file" id="f-imagem-file" accept="image/*" required>
+        </div>
+        <div class="img-preview" id="f-imagem-preview">Pré-visualização da capa</div>
+        <div class="form-note" id="f-imagem-keep-note" style="display:none;">Capa atual será mantida.</div>
+        <div class="field">
+          <label>Link da matéria original</label>
+          <input type="url" id="f-link" required placeholder="https://veiculo.com/materia">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Categoria</label>
+            <select id="f-categoria" required>
+              <option value="seguranca">Segurança</option>
+              <option value="transito">Trânsito</option>
+              <option value="operacao-policial">Operação Policial</option>
+              <option value="furto-roubo">Furto / Roubo</option>
+              <option value="alerta-corporativo">Alerta Corporativo</option>
+              <option value="manifestacao">Manifestação</option>
+              <option value="outros">Outros</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Data da matéria</label>
+            <input type="date" id="f-data" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Cidade</label>
+            <input type="text" id="f-cidade" required placeholder="Ex: Rio de Janeiro">
+          </div>
+          <div class="field">
+            <label>UF</label>
+            <input type="text" id="f-uf" required maxlength="2" placeholder="RJ" style="text-transform:uppercase;">
+          </div>
+        </div>
+        <div class="field">
+          <label>Resumo</label>
+          <textarea id="f-resumo" rows="3" required placeholder="Breve resumo da matéria..."></textarea>
+        </div>
+        <div class="field" id="operador-nome-field" style="display:none;">
+          <label>Nome de quem está inserindo</label>
+          <input type="text" id="f-operador-nome" placeholder="Seu nome">
+        </div>
+        <div class="checkbox-field">
+          <input type="checkbox" id="f-destaque">
+          <label for="f-destaque">Marcar como destaque de hoje</label>
+        </div>
+        <button type="submit" class="submit-btn" id="f-submit-btn">Publicar matéria</button>
+        <button type="button" class="chip" id="f-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
+      </form>
+
+      <!-- NOVA MANIFESTAÇÃO -->
+      <form class="drawer-pane" id="pane-manif">
+        <div class="field">
+          <label>Título / Motivo</label>
+          <input type="text" id="m-titulo" required placeholder="Ex: Ato público estadual dos professores">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>Data</label>
+            <input type="date" id="m-data" required>
+          </div>
+          <div class="field">
+            <label>Nível de impacto</label>
+            <select id="m-impacto" required>
+              <option value="alto">Alto</option>
+              <option value="medio" selected>Médio</option>
+              <option value="baixo">Baixo</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>Região / Cidade</label>
+          <input type="text" id="m-regiao" required placeholder="Ex: Rio de Janeiro - Centro">
+        </div>
+        <div class="field">
+          <label>Local de concentração</label>
+          <input type="text" id="m-local" required placeholder="Ex: Praça Marechal Deodoro">
+        </div>
+        <div class="field">
+          <label>Descrição</label>
+          <textarea id="m-descricao" rows="3" required placeholder="Detalhes, rotas previstas, orientações..."></textarea>
+        </div>
+        <button type="submit" class="submit-btn">Publicar manifestação</button>
+      </form>
+
+      <!-- INFORME (template padronizado) -->
+      <form class="drawer-pane" id="pane-informe">
+        <input type="hidden" id="i-edit-id" value="">
+        <div class="form-note" id="informe-edit-banner" style="display:none;background:var(--accent-soft);color:var(--accent);padding:9px 11px;border-radius:8px;font-weight:600;">Editando informe publicado</div>
+        <div class="field">
+          <label>Template</label>
+          <select id="i-tipo" required></select>
+        </div>
+        <div class="field">
+          <label>Título</label>
+          <input type="text" id="i-titulo" required placeholder="Ex: Interdição na Av. Brasil sentido Centro">
+        </div>
+        <div class="field">
+          <label>Data</label>
+          <input type="date" id="i-data" required>
+        </div>
+        <div class="field">
+          <label>Imagens</label>
+          <input type="file" id="i-imagens-file" accept="image/*" multiple>
+        </div>
+        <div class="img-multi-preview" id="i-imagens-preview"></div>
+        <div class="field">
+          <label>Resumo (abertura)</label>
+          <textarea id="i-resumo" rows="2" required placeholder="Frase de abertura, resume o essencial..."></textarea>
+        </div>
+        <div class="field">
+          <label>Corpo</label>
+          <textarea id="i-corpo" rows="6" required placeholder="Desenvolvimento do informe..."></textarea>
+        </div>
+        <div class="field">
+          <label>Imagem no meio do texto (opcional)</label>
+          <input type="file" id="i-imagem-meio-file" accept="image/*">
+        </div>
+        <div class="img-preview" id="i-imagem-meio-preview">Sem imagem</div>
+        <div class="field">
+          <label>Destaque / Citação</label>
+          <textarea id="i-destaque" rows="2" placeholder="Opcional"></textarea>
+        </div>
+        <div class="field">
+          <label>Recomendação</label>
+          <textarea id="i-recomendacao" rows="2" placeholder="Opcional"></textarea>
+        </div>
+        <div class="field" id="operador-nome-field-informe" style="display:none;">
+          <label>Nome de quem está inserindo</label>
+          <input type="text" id="i-operador-nome" placeholder="Seu nome">
+        </div>
+        <button type="submit" class="submit-btn" id="i-submit-btn">Publicar informe</button>
+        <button type="button" class="chip" id="i-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
+      </form>
+
+      <!-- GERENCIAR -->
+      <div class="drawer-pane" id="pane-gerenciar">
+        <button type="button" class="submit-btn admin-only" id="export-csv-btn" hidden style="background:var(--navy);box-shadow:0 8px 20px var(--navy-glow);">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/></svg>
+          Exportar planilha (CSV)
+        </button>
+        <div class="field">
+          <label>Matérias publicadas</label>
+        </div>
+        <div class="manage-list" id="manage-materias"></div>
+        <div class="field" style="margin-top:10px;">
+          <label>Manifestações publicadas</label>
+        </div>
+        <div class="manage-list" id="manage-manif"></div>
+        <div class="field" style="margin-top:10px;">
+          <label>Informes publicados</label>
+        </div>
+        <div class="manage-list" id="manage-informes"></div>
+      </div>
+
+      <!-- VALIDAÇÃO (minerador automático — admin) -->
+      <div class="drawer-pane admin-only" id="pane-validacao" hidden>
+        <button type="button" class="submit-btn" id="mine-btn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:-2px;margin-right:6px;"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          Minerar novas matérias
+        </button>
+        <div class="form-note" id="mine-status"></div>
+        <div class="field" style="margin-top:8px;">
+          <label>Aguardando validação</label>
+        </div>
+        <div class="manage-list" id="pending-list"></div>
+      </div>
+
+      <!-- CLIENTES (admin) -->
+      <div class="drawer-pane admin-only" id="pane-clientes" hidden>
+        <form id="form-cliente" style="display:flex;flex-direction:column;gap:14px;">
+          <div class="field">
+            <label>Nome da empresa</label>
+            <input type="text" id="c-nome" required placeholder="Ex: SBM Offshore">
+          </div>
+          <div class="field">
+            <label>Áreas de interesse</label>
+            <input type="text" id="c-areas" required placeholder="Ex: Santos, Vitória, Rio de Janeiro">
+          </div>
+          <button type="submit" class="submit-btn">Adicionar cliente</button>
+        </form>
+        <div class="field" style="margin-top:18px;">
+          <label>Clientes cadastrados</label>
+        </div>
+        <div class="manage-list" id="manage-clientes"></div>
+      </div>
+
+      <!-- MÉTRICAS (mini-dashboard admin: matérias por operador) -->
+      <div class="drawer-pane admin-only" id="pane-metricas" hidden>
+        <div class="field-row">
+          <div class="field">
+            <label>De</label>
+            <input type="date" id="met-de">
+          </div>
+          <div class="field">
+            <label>Até</label>
+            <input type="date" id="met-ate">
+          </div>
+        </div>
+        <div class="field" style="margin-top:6px;">
+          <label>Matérias por operador</label>
+        </div>
+        <div id="metricas-list" style="display:flex;flex-direction:column;gap:10px;"></div>
+        <div class="form-note" id="metricas-total" style="margin-top:6px;"></div>
+      </div>
+
+      <!-- APARÊNCIA (admin): carrossel do topo + capas dos templates -->
+      <div class="drawer-pane admin-only" id="pane-aparencia" hidden>
+
+        <div class="field"><label>Carrossel do Topo</label></div>
+        <form id="form-hero" style="display:flex;flex-direction:column;gap:14px;">
+          <input type="hidden" id="h-edit-id" value="">
+          <div class="field">
+            <label>Imagem</label>
+            <input type="file" id="h-imagem-file" accept="image/*">
+          </div>
+          <div class="img-preview" id="h-imagem-preview">Pré-visualização</div>
+          <div class="field">
+            <label>Selo (eyebrow)</label>
+            <input type="text" id="h-eyebrow" placeholder="Ex: Movi SOS">
+          </div>
+          <div class="field">
+            <label>Título</label>
+            <input type="text" id="h-titulo" required placeholder="Ex: Alerta em tempo real">
+          </div>
+          <div class="field">
+            <label>Subtítulo</label>
+            <input type="text" id="h-subtitulo" placeholder="Ex: Botão de pânico conectado à central 24h">
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label>Texto do botão</label>
+              <input type="text" id="h-cta-label" placeholder="Ex: Saiba mais">
+            </div>
+            <div class="field">
+              <label>Link do botão</label>
+              <input type="url" id="h-cta-url" placeholder="https://...">
+            </div>
+          </div>
+          <button type="submit" class="submit-btn" id="h-submit-btn">Adicionar slide</button>
+          <button type="button" class="chip" id="h-cancel-edit" style="display:none;justify-content:center;padding:10px;">Cancelar edição</button>
+        </form>
+        <div class="field" style="margin-top:16px;"><label>Slides cadastrados</label></div>
+        <div class="manage-list" id="manage-hero"></div>
+
+        <div class="field" style="margin-top:26px;"><label>Capas dos Templates</label></div>
+        <div id="manage-template-covers" style="display:flex;flex-direction:column;gap:12px;"></div>
+
+      </div>
+
+    </div>
+  </aside>
 
   <button class="fab-editor" id="fab-editor">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
@@ -1525,93 +1294,10 @@
     { id:'transito', label:'Trânsito', color:'var(--warn)' },
     { id:'operacao-policial', label:'Operação Policial', color:'var(--info)' },
     { id:'furto-roubo', label:'Furto / Roubo', color:'#ff7c85' },
-    { id:'latrocinio', label:'Latrocínio', color:'#5C1A1A' },
-    { id:'assalto', label:'Assalto', color:'#C2660B' },
-    { id:'tiros', label:'Tiros', color:'#B8266B' },
-    { id:'roubo', label:'Roubo', color:'#0E7C86' },
-    { id:'apreensao', label:'Apreensão', color:'#3B5568' },
     { id:'alerta-corporativo', label:'Alerta Corporativo', color:'#b795ff' },
     { id:'manifestacao', label:'Manifestação', color:'var(--ok)' },
-    { id:'barricadas', label:'Barricadas', color:'#7A2A34' },
-    { id:'briga-de-torcida', label:'Briga de Torcida', color:'#1E9762' },
-    { id:'alagamento', label:'Alagamento', color:'#B87D14' },
-    { id:'bloqueio-de-vias', label:'Bloqueio de Vias', color:'#3159C9' },
-    { id:'manifestacao-moradores', label:'Manifestação de Moradores', color:'#C22A38' },
-    { id:'alerta-defesa-civil', label:'Alerta da Defesa Civil', color:'#6B3FCF' },
-    { id:'confronto-faccoes', label:'Confronto entre Facções Criminosas', color:'#0E7C86' },
-    { id:'operacao-pm', label:'Operação da Polícia Militar', color:'#C2660B' },
-    { id:'operacao-pc', label:'Operação da Polícia Civil', color:'#B8266B' },
-    { id:'ocupacao-policial-provisoria', label:'Ocupação Policial Provisória', color:'#5C1A1A' },
-    { id:'bolsao-dagua-previsao', label:'Provável bolsão d\'água (API de Meteorologia)', color:'#3B5568' },
-    { id:'interdicao', label:'Interdição', color:'#8A8F1F' },
-    { id:'incendio-veiculo', label:'Incêndio em Veículo', color:'#4B6FB0' },
-    { id:'atropelamento', label:'Atropelamento', color:'#7A2A34' },
-    { id:'atentado-forca-policial', label:'Atentado Contra Força Policial', color:'#1E9762' },
-    { id:'queda-de-arvore', label:'Queda de Árvore', color:'#B87D14' },
-    { id:'acidente', label:'Acidente', color:'#3159C9' },
-    { id:'animal-na-pista', label:'Animal na Pista', color:'#C22A38' },
-    { id:'transito-lento', label:'Trânsito lento', color:'#6B3FCF' },
-    { id:'engavetamento', label:'Engavetamento', color:'#0E7C86' },
-    { id:'obra', label:'Obra', color:'#C2660B' },
-    { id:'veiculo-enguicado', label:'Veículo Enguiçado', color:'#B8266B' },
-    { id:'estagio-de-atencao', label:'Estágio de Atenção', color:'#5C1A1A' },
-    { id:'interrupcao-servicos-publicos', label:'Interrupção nos serviços públicos', color:'#3B5568' },
-    { id:'previsao-eventos-diversos', label:'Previsão de eventos diversos', color:'#8A8F1F' },
-    { id:'assalto-com-disparos', label:'Assalto com disparos', color:'#4B6FB0' },
-    { id:'ato-de-vandalismo', label:'Ato de Vandalismo', color:'#7A2A34' },
-    { id:'risco-iminente', label:'Risco Iminente', color:'#1E9762' },
-    { id:'suspeita-de-bomba', label:'Suspeita de Bomba', color:'#B87D14' },
-    { id:'troca-de-tiros', label:'Troca de Tiros', color:'#3159C9' },
-    { id:'explosao-de-bueiro', label:'Explosão de bueiro', color:'#C22A38' },
-    { id:'poda-de-arvore', label:'Poda de Árvore', color:'#6B3FCF' },
-    { id:'previsao-interdicao-via', label:'Previsão de Interdição de Via', color:'#0E7C86' },
-    { id:'blitz-policial', label:'Blitz Policial', color:'#C2660B' },
-    { id:'blitz-lei-seca', label:'Blitz Lei Seca', color:'#B8266B' },
-    { id:'acidente-vitimas-fatais', label:'Acidente com vítimas fatais', color:'#5C1A1A' },
-    { id:'buraco-na-rua', label:'Buraco na Rua', color:'#3B5568' },
-    { id:'incendio-grandes-proporcoes', label:'Incêndio de Grandes Proporções', color:'#8A8F1F' },
-    { id:'manifestacao-vandalismo', label:'Manifestação com Atos de Vandalismo', color:'#4B6FB0' },
-    { id:'bloco-carnavalesco', label:'Bloco Carnavalesco', color:'#7A2A34' },
-    { id:'ocorrencia-policial', label:'Ocorrência Policial', color:'#1E9762' },
-    { id:'acidente-grandes-proporcoes', label:'Acidente de Grandes Proporções', color:'#B87D14' },
-    { id:'incendio-edificacao', label:'Incêndio em Edificação', color:'#3159C9' },
-    { id:'bolsao-dagua', label:'Bolsão D\'Água', color:'#C22A38' },
-    { id:'acidente-com-vitimas', label:'Acidente com vítimas', color:'#6B3FCF' },
-    { id:'manifestacao-em-curso', label:'Manifestação popular em curso', color:'#0E7C86' },
-    { id:'deslizamento', label:'Deslizamento', color:'#C2660B' },
-    { id:'roubos-em-serie', label:'Roubos em série (Arrastão)', color:'#B8266B' },
-    { id:'assalto-a-banco', label:'Assalto a Banco', color:'#5C1A1A' },
-    { id:'previsao-manifestacao', label:'Previsão de manifestação popular', color:'#3B5568' },
-    { id:'aeroporto-fechado', label:'Aeroporto fechado para pousos e decolagens', color:'#8A8F1F' },
-    { id:'festas-comemoracoes', label:'Festas e Comemorações', color:'#4B6FB0' },
     { id:'outros', label:'Outros', color:'var(--text-dim)' },
   ];
-
-  // Categorias com cor fixa em CSS (.cat-<id>); as demais (lista extensa acima)
-  // usam a cor definida no array CATEGORIES, aplicada inline em catBadgeHTML().
-  const CATEGORIAS_COM_CSS = new Set(['seguranca','transito','operacao-policial','furto-roubo','latrocinio','assalto','tiros','roubo','apreensao','alerta-corporativo','manifestacao','outros']);
-  const catColor = (id) => (CATEGORIES.find(c=>c.id===id)||{}).color || 'var(--text-dim)';
-  function catBadgeHTML(id, extraStyle){
-    const estilo = extraStyle || '';
-    if (CATEGORIAS_COM_CSS.has(id)) return `<span class="cat-tag cat-${id}" style="${estilo}">${catLabel(id)}</span>`;
-    const cor = catColor(id);
-    return `<span class="cat-tag" style="background:${cor}22;color:${cor};${estilo}">${catLabel(id)}</span>`;
-  }
-  document.getElementById('lista-categorias').innerHTML = CATEGORIES
-    .filter(c => c.id !== 'todos')
-    .map(c => `<option value="${c.label}">`).join('');
-
-  // Campo de busca de categoria (Nova Notícia): o operador digita e o navegador
-  // sugere pelas opções da datalist; ao bater com um rótulo válido, guardamos o
-  // id correspondente no campo oculto f-categoria (é ele que o resto do código usa).
-  function setCategoriaCampo(id){
-    document.getElementById('f-categoria').value = id || '';
-    document.getElementById('f-categoria-busca').value = id ? catLabel(id) : '';
-  }
-  document.getElementById('f-categoria-busca').addEventListener('input', (e) => {
-    const encontrada = CATEGORIES.find(c => c.label.toLowerCase() === e.target.value.trim().toLowerCase());
-    document.getElementById('f-categoria').value = encontrada ? encontrada.id : '';
-  });
 
   /* Templates padronizados de informe: cada card na Home leva ao feed
      daquele template. O layout do informe (.informe-card) é o mesmo
@@ -1742,7 +1428,7 @@
         ${isToday ? '<span class="today-flag">HOJE</span>' : ''}
       </div>
       <div class="card-body">
-        ${catBadgeHTML(a.categoria)}
+        <span class="cat-tag cat-${a.categoria}">${catLabel(a.categoria)}</span>
         <div class="card-title">${a.titulo}</div>
         <div class="card-excerpt">${a.resumo}</div>
         <div class="card-foot">
@@ -1897,17 +1583,17 @@
     const informes = await getInformes();
     const covers = await getTemplateImages();
     const el = document.getElementById('template-grid');
-    const logoUrl = './logo-white-transparent.png';
     el.innerHTML = TEMPLATES.map(t => {
       const count = informes.filter(i => i.tipo === t.id).length;
-      const cover = t.id === 'operacoes-rj' ? './operacao-policial-img.png' : covers[t.id];
+      const cover = covers[t.id];
       const bg = cover
-        ? `url('${cover}') center/cover`
+        ? `linear-gradient(135deg, ${t.color1}CC, ${t.color2}CC), url('${cover}') center/cover`
         : `linear-gradient(135deg, ${t.color1}, ${t.color2})`;
       return `
       <button class="template-card" data-tipo="${t.id}" style="background:${bg};">
+        <div class="tpl-icon"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">${t.icon}</svg></div>
         <div class="tpl-top">
-          <img class="tpl-logo" src="${logoUrl}" alt="">
+          <span class="tpl-icon-small"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2">${t.icon}</svg></span>
           <span class="tpl-count">${count}</span>
         </div>
         <div>
@@ -1931,9 +1617,6 @@
   }
 
   function informeCardHTML(item){
-    if (item.conteudo_html){
-      return `<div class="informe-boletim-render">${item.conteudo_html}</div>`;
-    }
     const t = templateById(item.tipo);
     return `
     <article class="informe-card">
@@ -1962,7 +1645,6 @@
   }
 
   let informeTitlesById = {};
-  let activeInformeDetail = false;
   let currentShareId = null;
 
   function bindInformeShareButtons(container){
@@ -1988,18 +1670,6 @@
     document.getElementById('share-popover').hidden = true;
     currentShareId = null;
   }
-
-  function informeMiniCardHTML(item){
-    const thumb = item.imagens && item.imagens.length ? item.imagens[0] : item.imagem_meio;
-    return `
-      <button type="button" class="informe-mini-card" data-id="${item.id}">
-        ${thumb ? `<img class="informe-mini-thumb" src="${thumb}" alt="">` : ''}
-        <span class="informe-mini-content">
-          <span class="informe-mini-title">${item.titulo}</span>
-          ${item.resumo ? `<span class="informe-mini-summary">${item.resumo}</span>` : ''}
-        </span>
-      </button>`;
-  }
   function fallbackCopyLink(text, done){
     const ta = document.createElement('textarea');
     ta.value = text;
@@ -2015,41 +1685,12 @@
   async function renderInformesFeed(tipoId){
     const t = templateById(tipoId);
     const all = (await getInformes()).filter(i => i.tipo === tipoId);
-    activeInformeDetail = false;
     all.forEach(i => { informeTitlesById[i.id] = i.titulo; });
     document.getElementById('informes-title').textContent = t.label;
     document.getElementById('count-informes').textContent = `${all.length} informe${all.length===1?'':'s'}`;
     const el = document.getElementById('informes-feed');
-    if (!all.length){
-      el.innerHTML = `<div class="empty-state">Nenhum informe publicado neste template ainda.</div>`;
-      return;
-    }
-    const groups = {};
-    all.slice().sort((a,b) => b.data.localeCompare(a.data)).forEach(item => {
-      (groups[item.data] ||= []).push(item);
-    });
-    el.innerHTML = Object.keys(groups).sort((a,b) => b.localeCompare(a)).map(data => `
-      <section class="informe-day">
-        <div class="informe-day-head">${fmtDatePt(data)}</div>
-        <div class="informe-mini-grid">${groups[data].map(informeMiniCardHTML).join('')}</div>
-      </section>`).join('');
-    el.querySelectorAll('.informe-mini-card').forEach(card => {
-      card.addEventListener('click', () => openInformeDetail(card.dataset.id));
-    });
-  }
-
-  async function openInformeDetail(id){
-    const item = await getInformeById(id);
-    if (!item) return;
-    activeInformeDetail = true;
-    informeTitlesById[item.id] = item.titulo;
-    const t = templateById(item.tipo);
-    document.getElementById('informes-title').textContent = item.titulo;
-    document.getElementById('count-informes').textContent = t.label;
-    const el = document.getElementById('informes-feed');
-    el.innerHTML = informeCardHTML(item);
+    el.innerHTML = all.length ? all.map(informeCardHTML).join('') : `<div class="empty-state">Nenhum informe publicado neste template ainda.</div>`;
     bindInformeShareButtons(el);
-    window.scrollTo({top:0, behavior:'smooth'});
   }
 
   function openInformesView(tipoId){
@@ -2063,10 +1704,9 @@
     try { item = await getInformeById(id); } catch (e) { item = null; }
     if (!item){
       switchView('home');
-      showToast('Boletim não encontrado');
+      showToast('Informe não encontrado');
       return;
     }
-    activeInformeDetail = true;
     informeTitlesById[item.id] = item.titulo;
     const t = templateById(item.tipo);
     document.getElementById('informes-title').textContent = item.titulo;
@@ -2075,7 +1715,6 @@
     el.innerHTML = informeCardHTML(item);
     bindInformeShareButtons(el);
     switchView('informes');
-    if (document.body.classList.contains('boletim-unico')) document.title = item.titulo + ' — MOVINEWS';
   }
 
   /* ================================================================
@@ -2092,7 +1731,7 @@
         </div>
         <div class="actions">
           <button class="toggle-destaque" title="Alternar destaque">${a.destaque ? '★' : '☆'}</button>
-          <button class="edit-materia" title="Editar notícia">
+          <button class="edit-materia" title="Editar matéria">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
           </button>
           <button class="duplicate-materia" title="Duplicar para edição">
@@ -2123,7 +1762,7 @@
     document.querySelectorAll('.delete-materia').forEach(btn => btn.addEventListener('click', async (e) => {
       const id = e.target.closest('.manage-row').dataset.id;
       await deleteArticle(id);
-      showToast('Notícia excluída');
+      showToast('Matéria excluída');
       renderAll();
     }));
     document.querySelectorAll('.edit-materia').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -2152,7 +1791,6 @@
     }));
 
     const informes = await getInformes();
-    informes.forEach(i => { informeTitlesById[i.id] = i.titulo; });
     document.getElementById('manage-informes').innerHTML = informes.length ? informes.map(i => {
       const t = templateById(i.tipo);
       return `
@@ -2163,14 +1801,11 @@
           <div class="s">${fmtDatePt(i.data)} · ${t.label}</div>
         </div>
         <div class="actions">
-          <button class="edit-informe" title="Editar boletim">
+          <button class="edit-informe" title="Editar informe">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
           </button>
           <button class="duplicate-informe" title="Duplicar para edição">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-          </button>
-          <button class="share-informe" data-id="${i.id}" title="Compartilhar">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/></svg>
           </button>
           <button class="danger delete-informe" title="Excluir">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
@@ -2179,16 +1814,10 @@
       </div>`;
     }).join('') : `<div class="form-note">Nenhum informe publicado.</div>`;
 
-    document.querySelectorAll('.share-informe').forEach(btn => btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      const pop = document.getElementById('share-popover');
-      if (!pop.hidden && currentShareId === btn.dataset.id){ closeSharePopover(); return; }
-      openSharePopover(btn);
-    }));
     document.querySelectorAll('.delete-informe').forEach(btn => btn.addEventListener('click', async (e) => {
       const id = e.target.closest('.manage-row').dataset.id;
       await deleteInforme(id);
-      showToast('Boletim excluído');
+      showToast('Informe excluído');
       renderAll();
     }));
     document.querySelectorAll('.edit-informe').forEach(btn => btn.addEventListener('click', async (e) => {
@@ -2263,23 +1892,34 @@
     }));
   }
 
-  // Conta compartilhada do CRI: subdivide por nome de quem inseriu.
-  // Demais contas (ex: admin) contam como uma linha única por e-mail.
-  function contarPorOperador(lista){
+  async function renderMetrics(){
+    const deInput = document.getElementById('met-de');
+    const ateInput = document.getElementById('met-ate');
+    if (!deInput.value) deInput.value = daysAgo(30);
+    if (!ateInput.value) ateInput.value = todayISO();
+    const de = deInput.value;
+    const ate = ateInput.value;
+
+    const arts = await getArticles();
+    const noRange = arts.filter(a => {
+      const d = (a.criado_em || a.data || '').slice(0, 10);
+      return d >= de && d <= ate;
+    });
+
     const counts = {};
-    lista.forEach(item => {
-      const op = item.operador || 'desconhecido';
+    noRange.forEach(a => {
+      const op = a.operador || 'desconhecido';
+      // Conta compartilhada do CRI: subdivide por nome de quem inseriu.
+      // Demais contas (ex: admin) contam como uma linha única por e-mail.
       const key = op.toLowerCase() === 'cri24@movisafe-amlat.com'
-        ? `CRI · ${item.operador_nome || 'sem identificação'}`
+        ? `CRI · ${a.operador_nome || 'sem identificação'}`
         : op;
       counts[key] = (counts[key] || 0) + 1;
     });
-    return Object.entries(counts).sort((a, b) => b[1] - a[1]);
-  }
-
-  function renderRankingList(elId, ranking){
+    const ranking = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     const max = ranking.length ? ranking[0][1] : 0;
-    const el = document.getElementById(elId);
+
+    const el = document.getElementById('metricas-list');
     el.innerHTML = ranking.length ? ranking.map(([label, count]) => `
       <div class="metric-row">
         <div class="metric-row-top">
@@ -2288,120 +1928,9 @@
         </div>
         <div class="metric-bar-track"><div class="metric-bar-fill" style="width:${max ? (count/max*100) : 0}%"></div></div>
       </div>
-    `).join('') : `<div class="form-note">Nada publicado no período selecionado.</div>`;
-  }
+    `).join('') : `<div class="form-note">Nenhuma matéria inserida no período selecionado.</div>`;
 
-  // Agrupa por texto livre (cidade/bairro), ignorando maiúsc./minúsc. na
-  // contagem mas preservando a grafia da primeira ocorrência para exibir.
-  // Mantém as `n` maiores e soma o resto em "Outros".
-  function agruparTopN(itens, campo, n){
-    const grupos = {};
-    itens.forEach(item => {
-      const bruto = (item[campo] || '').trim();
-      if (!bruto) return;
-      const chave = bruto.toLowerCase();
-      if (!grupos[chave]) grupos[chave] = { label: bruto, count: 0 };
-      grupos[chave].count++;
-    });
-    const ranking = Object.values(grupos).sort((a, b) => b.count - a.count);
-    const top = ranking.slice(0, n).map(g => [g.label, g.count]);
-    const restoTotal = ranking.slice(n).reduce((s, g) => s + g.count, 0);
-    if (restoTotal > 0) top.push(['Outros', restoTotal]);
-    return top;
-  }
-
-  // Agrupa por um campo de id fixo (categoria/tipo), convertendo pro rótulo
-  // legível via `rotulador`. Mantém as `n` maiores e soma o resto em "Outros".
-  function contarComRotulo(itens, campo, rotulador, n){
-    const contagem = {};
-    itens.forEach(item => {
-      const v = item[campo];
-      if (!v) return;
-      contagem[v] = (contagem[v] || 0) + 1;
-    });
-    const ranking = Object.entries(contagem).sort((a, b) => b[1] - a[1]);
-    const top = ranking.slice(0, n).map(([id, count]) => [rotulador(id), count]);
-    const restoTotal = ranking.slice(n).reduce((s, [, c]) => s + c, 0);
-    if (restoTotal > 0) top.push(['Outros', restoTotal]);
-    return top;
-  }
-
-  const DASH_CORES = ['#7A2A34', '#3159C9', '#B87D14', '#1E9762', '#6B3FCF', '#C22A38'];
-  const DASH_COR_OUTROS = '#8B93A3';
-
-  // Renderiza um card com barras horizontais + rosca a partir de pares [label, count].
-  function renderDashCard(elId, titulo, dados){
-    const el = document.getElementById(elId);
-    const total = dados.reduce((s, [, c]) => s + c, 0);
-    if (!dados.length || !total){
-      el.innerHTML = `<div class="dash-card"><div class="dash-card-title">${titulo}</div><div class="form-note">Sem dados no período.</div></div>`;
-      return;
-    }
-    const max = Math.max(...dados.map(([, c]) => c));
-    const cores = dados.map(([label], i) => label === 'Outros' ? DASH_COR_OUTROS : DASH_CORES[i % DASH_CORES.length]);
-
-    const barrasHTML = dados.map(([label, count], i) => `
-      <div class="dash-bar-row" title="${label}: ${count}">
-        <span class="dash-bar-label">${label}</span>
-        <span class="dash-bar-track"><span class="dash-bar-fill" style="width:${(count/max*100)}%;background:${cores[i]};"></span></span>
-        <span class="dash-bar-value">${count}</span>
-      </div>`).join('');
-
-    let acumulado = 0;
-    const stops = dados.map(([, count], i) => {
-      const inicio = acumulado / total * 100;
-      acumulado += count;
-      const fim = acumulado / total * 100;
-      return `${cores[i]} ${inicio}% ${fim}%`;
-    }).join(', ');
-
-    const legendaHTML = dados.map(([label, count], i) => `
-      <div class="dash-legend-item"><span class="dash-legend-dot" style="background:${cores[i]};"></span>${label} · ${Math.round(count/total*100)}%</div>`).join('');
-
-    el.innerHTML = `
-      <div class="dash-card">
-        <div class="dash-card-title">${titulo}</div>
-        <div class="dash-body">
-          <div class="dash-bars">${barrasHTML}</div>
-          <div class="dash-donut-wrap">
-            <div class="dash-donut" style="background:conic-gradient(${stops});"></div>
-            <div class="dash-legend">${legendaHTML}</div>
-          </div>
-        </div>
-      </div>`;
-  }
-
-  async function renderMetrics(){
-    const deInput = document.getElementById('met-de');
-    const ateInput = document.getElementById('met-ate');
-    if (!deInput.value) deInput.value = daysAgo(30);
-    if (!ateInput.value) ateInput.value = todayISO();
-    const de = deInput.value;
-    const ate = ateInput.value;
-    const noPeriodo = (item) => {
-      const d = (item.criado_em || item.data || '').slice(0, 10);
-      return d >= de && d <= ate;
-    };
-
-    const arts = await getArticles();
-    const noRange = arts.filter(noPeriodo);
-    const rankingArts = contarPorOperador(noRange);
-    renderRankingList('metricas-list', rankingArts);
-    document.getElementById('metricas-total').textContent = `Total no período: ${noRange.length} matéria${noRange.length===1?'':'s'} · ${rankingArts.length} operador${rankingArts.length===1?'':'es'}`;
-
-    const informesTodos = await getInformes();
-    const informesRange = informesTodos.filter(noPeriodo);
-    const rankingInformes = contarPorOperador(informesRange);
-    renderRankingList('metricas-boletim-list', rankingInformes);
-    document.getElementById('metricas-boletim-total').textContent = `Total no período: ${informesRange.length} boletim${informesRange.length===1?'':'ns'} · ${rankingInformes.length} operador${rankingInformes.length===1?'':'es'}`;
-
-    renderDashCard('dash-noticias-categoria', 'Notícias por categoria', contarComRotulo(noRange, 'categoria', catLabel, 6));
-    renderDashCard('dash-noticias-cidade', 'Notícias por cidade', agruparTopN(noRange, 'cidade', 6));
-    renderDashCard('dash-noticias-bairro', 'Notícias por bairro', agruparTopN(noRange, 'bairro', 6));
-
-    renderDashCard('dash-boletins-tipo', 'Boletins por template', contarComRotulo(informesRange, 'tipo', id => (templateById(id)||{}).label || id, 6));
-    renderDashCard('dash-boletins-cidade', 'Boletins por cidade', agruparTopN(informesRange, 'cidade', 6));
-    renderDashCard('dash-boletins-bairro', 'Boletins por bairro', agruparTopN(informesRange, 'bairro', 6));
+    document.getElementById('metricas-total').textContent = `Total no período: ${noRange.length} matéria${noRange.length===1?'':'s'} · ${ranking.length} operador${ranking.length===1?'':'es'}`;
   }
 
   /* ================================================================
@@ -2495,7 +2024,7 @@
      UI: NAV, FILTROS, DRAWER, TICKER, RELÓGIO
      ================================================================ */
   const VIEWS = [
-    { id:'home', label:'Notícias', icon:'M4 6h16M4 12h16M4 18h10' },
+    { id:'home', label:'Boletim', icon:'M4 6h16M4 12h16M4 18h10' },
     { id:'manifestacoes', label:'Manifestações', icon:'M12 2 4 6v6c0 5 4 9 8 10 4-1 8-5 8-10V6l-8-4Z' },
     { id:'arquivo', label:'Arquivo', icon:'M3 7h18M3 7v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V7M3 7l2-4h14l2 4M10 12h4' },
   ];
@@ -2503,8 +2032,6 @@
   function switchView(view){
     state.view = view;
     document.querySelectorAll('.side-item[data-view]').forEach(b => b.classList.toggle('active', b.dataset.view===view));
-    document.getElementById('open-editor-btn').classList.remove('active');
-    document.getElementById('editor-drawer').hidden = true;
     ['home','manifestacoes','arquivo','informes'].forEach(v => {
       document.getElementById('view-'+v).hidden = v !== view;
     });
@@ -2523,12 +2050,10 @@
     });
   }
 
-  let categoriasExpandidas = false; // controla se a lista extensa de categorias está aberta na sidebar
-
   async function renderSidebarCategories(){
     const all = await getArticles();
     const el = document.getElementById('sidebar-categories');
-    const itemHTML = (c) => {
+    el.innerHTML = CATEGORIES.map(c => {
       const count = c.id === 'todos' ? all.length : all.filter(a => a.categoria === c.id).length;
       return `
       <button class="side-item ${c.id===state.category?'active':''}" data-cat="${c.id}">
@@ -2536,31 +2061,14 @@
         <span class="label">${c.label}</span>
         <span class="count">${count}</span>
       </button>`;
-    };
-    // Categorias principais (com cor dedicada) ficam sempre visíveis; a lista
-    // extensa de tipos específicos fica colapsada atrás de "Ver mais".
-    const principais = CATEGORIES.filter(c => c.id === 'todos' || CATEGORIAS_COM_CSS.has(c.id));
-    const extras = CATEGORIES.filter(c => c.id !== 'todos' && !CATEGORIAS_COM_CSS.has(c.id));
-    const expandido = categoriasExpandidas || extras.some(c => c.id === state.category);
-    el.innerHTML = principais.map(itemHTML).join('') + (extras.length ? `
-      <div id="categorias-extras" ${expandido ? '' : 'hidden'}>${extras.map(itemHTML).join('')}</div>
-      <button type="button" class="side-item" id="toggle-categorias-extras">
-        <span class="sw" style="background:var(--text-dim)"></span>
-        <span class="label">${expandido ? 'Ver menos categorias' : 'Ver mais categorias'}</span>
-        <span class="count">${expandido ? '' : extras.length}</span>
-      </button>` : '');
-    el.querySelectorAll('.side-item[data-cat]').forEach(btn => {
+    }).join('');
+    el.querySelectorAll('.side-item').forEach(btn => {
       btn.addEventListener('click', () => {
         state.category = btn.dataset.cat;
-        el.querySelectorAll('.side-item[data-cat]').forEach(b => b.classList.toggle('active', b===btn));
+        el.querySelectorAll('.side-item').forEach(b => b.classList.toggle('active', b===btn));
         renderAll();
         closeSidebarMobile();
       });
-    });
-    const toggleBtn = document.getElementById('toggle-categorias-extras');
-    if (toggleBtn) toggleBtn.addEventListener('click', () => {
-      categoriasExpandidas = !categoriasExpandidas;
-      renderSidebarCategories();
     });
   }
 
@@ -2578,8 +2086,9 @@
   document.getElementById('date-filter').addEventListener('change', (e) => { state.date = e.target.value; renderAll(); });
   document.getElementById('sort-select').addEventListener('change', (e) => { state.sort = e.target.value; renderAll(); });
 
-  // Editor (página dentro da aplicação)
+  // Drawer
   const drawer = document.getElementById('editor-drawer');
+  const backdrop = document.getElementById('drawer-backdrop');
   const loginGate = document.getElementById('editor-login');
   const editorTabs = document.getElementById('editor-tabs');
   const editorBody = document.getElementById('editor-body');
@@ -2615,21 +2124,12 @@
     updateOperadorNomeField();
     if (isIn) { renderGerenciar(); renderClientes(); renderPending(); renderMetrics(); renderManageHero(); renderManageTemplateCovers(); }
   }
-  function openDrawer(){
-    ['home','manifestacoes','arquivo','informes'].forEach(v => { document.getElementById('view-'+v).hidden = true; });
-    document.querySelectorAll('.side-item[data-view]').forEach(b => b.classList.remove('active'));
-    document.getElementById('open-editor-btn').classList.add('active');
-    drawer.hidden = false;
-    refreshAuthUI();
-  }
-  function closeDrawer(){
-    drawer.hidden = true;
-    document.getElementById('open-editor-btn').classList.remove('active');
-    switchView(state.view || 'home');
-  }
+  function openDrawer(){ drawer.classList.add('open'); backdrop.classList.add('open'); refreshAuthUI(); }
+  function closeDrawer(){ drawer.classList.remove('open'); backdrop.classList.remove('open'); }
   document.getElementById('open-editor-btn').addEventListener('click', openDrawer);
   document.getElementById('fab-editor').addEventListener('click', openDrawer);
   document.getElementById('close-editor-btn').addEventListener('click', closeDrawer);
+  backdrop.addEventListener('click', closeDrawer);
 
   document.getElementById('login-form').addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -2646,22 +2146,14 @@
   });
   logoutBtn.addEventListener('click', async () => {
     await logoutEditor();
-    if (!document.body.classList.contains('boletim-unico')) bloquearAcesso();
     refreshAuthUI();
     showToast('Sessão encerrada');
   });
 
-  document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(tab => {
+  document.querySelectorAll('.drawer-tab').forEach(tab => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t===tab));
+      document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t===tab));
       document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id===tab.dataset.pane));
-    });
-  });
-
-  document.querySelectorAll('#gerenciar-subtabs > .drawer-tab').forEach(tab => {
-    tab.addEventListener('click', () => {
-      document.querySelectorAll('#gerenciar-subtabs > .drawer-tab').forEach(t => t.classList.toggle('active', t===tab));
-      document.querySelectorAll('.gerenciar-subpane').forEach(p => p.classList.toggle('active', p.id===tab.dataset.subpane));
     });
   });
 
@@ -2716,16 +2208,15 @@
   }
 
   function openMateriaForEdit(art){
-    document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
     document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id==='pane-materia'));
 
     document.getElementById('f-edit-id').value = art.id;
     document.getElementById('f-titulo').value = art.titulo;
     document.getElementById('f-link').value = art.link_original;
-    setCategoriaCampo(art.categoria);
+    document.getElementById('f-categoria').value = art.categoria;
     document.getElementById('f-cidade').value = art.cidade;
     document.getElementById('f-uf').value = art.uf;
-    document.getElementById('f-bairro').value = art.bairro || '';
     document.getElementById('f-data').value = art.data;
     document.getElementById('f-resumo').value = art.resumo;
     document.getElementById('f-destaque').checked = !!art.destaque;
@@ -2743,17 +2234,16 @@
   }
 
   function openMateriaForDuplicate(art){
-    document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
     document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id==='pane-materia'));
 
     document.getElementById('f-edit-id').value = '';
     pendingReviewSourceId = null;
     document.getElementById('f-titulo').value = art.titulo + ' (cópia)';
     document.getElementById('f-link').value = art.link_original;
-    setCategoriaCampo(art.categoria);
+    document.getElementById('f-categoria').value = art.categoria;
     document.getElementById('f-cidade').value = art.cidade;
     document.getElementById('f-uf').value = art.uf;
-    document.getElementById('f-bairro').value = art.bairro || '';
     document.getElementById('f-data').value = todayISO();
     document.getElementById('f-resumo').value = art.resumo;
     document.getElementById('f-destaque').checked = false;
@@ -2772,15 +2262,14 @@
 
   function openCandidateForReview(item){
     resetMateriaForm();
-    document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-materia'));
     document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id==='pane-materia'));
 
     document.getElementById('f-titulo').value = item.titulo;
     document.getElementById('f-link').value = item.link_original;
-    setCategoriaCampo(item.categoria);
+    document.getElementById('f-categoria').value = item.categoria;
     document.getElementById('f-cidade').value = item.cidade;
     document.getElementById('f-uf').value = item.uf;
-    document.getElementById('f-bairro').value = item.bairro || '';
     document.getElementById('f-data').value = item.data;
     document.getElementById('f-resumo').value = item.resumo;
     document.getElementById('edit-mode-banner').textContent = 'Revisando candidata minerada — confirme os dados e escolha a capa antes de publicar';
@@ -2801,10 +2290,6 @@
     const editId = document.getElementById('f-edit-id').value;
     if (!currentCoverFile && !currentCoverURL){
       showToast('Selecione uma imagem de capa');
-      return;
-    }
-    if (!CATEGORIES.some(c => c.id === document.getElementById('f-categoria').value)){
-      showToast('Escolha uma categoria válida na lista de sugestões');
       return;
     }
     const operadorNome = document.getElementById('f-operador-nome').value.trim();
@@ -2834,7 +2319,6 @@
       categoria: document.getElementById('f-categoria').value,
       cidade: document.getElementById('f-cidade').value,
       uf: document.getElementById('f-uf').value.toUpperCase(),
-      bairro: document.getElementById('f-bairro').value || null,
       data: document.getElementById('f-data').value,
       resumo: document.getElementById('f-resumo').value,
       destaque: document.getElementById('f-destaque').checked,
@@ -2842,7 +2326,7 @@
     try {
       if (editId){
         await updateArticle(editId, payload);
-        showToast('Notícia atualizada com sucesso');
+        showToast('Matéria atualizada com sucesso');
       } else {
         await addArticle({
           ...payload,
@@ -2854,14 +2338,13 @@
           await discardPending(pendingReviewSourceId);
           showToast('Candidata validada e publicada');
         } else {
-          showToast('Notícia publicada com sucesso');
+          showToast('Matéria publicada com sucesso');
         }
       }
       resetMateriaForm();
       renderAll();
     } catch (err) {
-      console.error('Erro ao salvar a notícia:', err);
-      showToast(formatDataError(err, 'Erro ao salvar a notícia'));
+      showToast('Erro ao salvar a matéria');
       submitBtn.disabled = false;
       submitBtn.textContent = originalBtnText;
     }
@@ -2883,553 +2366,9 @@
     renderAll();
   });
 
-  /* ---- Boletim de Operações Policiais (template visual pré-moldado) ---- */
-  const BOLETIM_TEMPLATE = `
-<div class="boletim">
-  <div class="boletim-faixa-topo"></div>
-  <div class="cabecalho-capa" style="--foto-capa:url('');">
-    <button type="button" class="botao-foto" id="boletimBtnCapa">🖼️ Trocar foto</button>
-    <input type="file" id="boletimInputCapa" accept="image/*" style="display:none">
-    <div class="capa-chevrons"><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="capa-conteudo">
-      <div class="capa-logo"><span class="movi">MOVI</span><span class="safe">SAFE</span></div>
-      <div class="capa-eyebrow">Boletim de</div>
-      <div class="capa-titulo">Operações</div>
-      <div class="capa-linha-accent"></div>
-      <div class="capa-sub">Policiais</div>
-      <div class="capa-linha-accent-fina"></div>
-      <div class="capa-local editavel" contenteditable="true">{{CIDADE}}</div>
-    </div>
-  </div>
-  <div class="info-secundaria">
-    <div class="confidencial">Este boletim é direcionado exclusivamente aos clientes Movisafe. Material informativo confidencial — uso interno e restrito.</div>
-    <div class="meta-linha">
-      <span><b>Local:</b> <span class="editavel" contenteditable="true">{{BAIRRO}}, {{CIDADE}} – {{UF}}</span></span>
-      <span><b>Data/Hora:</b> <span class="editavel" contenteditable="true">{{DATA}} · {{HORA}}</span></span>
-      <span><b>Órgão responsável:</b> <span class="editavel" contenteditable="true">{{ORGAO_RESPONSAVEL}}</span></span>
-    </div>
-    <div class="titulo-boletim editavel" contenteditable="true">{{TÍTULO DA OPERAÇÃO — ex.: Operação Policial de Grande Porte em {{BAIRRO}} Mobiliza Reforço de Segurança}}</div>
-  </div>
-  <div class="faixa-alerta">
-    <span class="ponto"></span>
-    <span class="editavel editavel-clara" contenteditable="true">NÍVEL DE ATENÇÃO: {{BAIXO / MODERADO / ALTO}} — recomenda-se atenção redobrada na região indicada</span>
-  </div>
-  <div class="corpo">
-    <div class="resumo editavel editavel-clara" contenteditable="true">
-      Este Boletim tem o propósito de informar que <b>{{ÓRGÃO — ex.: a Polícia Civil / PM-RJ / Delegacia de Homicídios}}</b>
-      deflagrou, nesta <b>{{DIA DA SEMANA, DD/MM}}</b>, uma operação policial em <b>{{BAIRRO / REGIÃO}}</b>,
-      com o objetivo de {{OBJETIVO DA OPERAÇÃO — ex.: cumprir mandados de busca e apreensão e prisão}}.
-      A ação conta com efetivo de <b>{{Nº AGENTES/VIATURAS, se divulgado}}</b> e segue em andamento.
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">①</span>Resumo da Operação</div>
-      <p class="editavel editavel-clara" contenteditable="true">{{Parágrafo descritivo: motivação da operação, unidades envolvidas, contexto (ex.: combate ao tráfico, cumprimento de mandados, resposta a ocorrência), horário de início e status atual.}}</p>
-      <div class="mapa-upload-wrap">
-        <img id="boletimImgMapa" class="imagem-mapa" src="" alt="Mapa ou foto do local" onerror="this.style.display='none';">
-        <div id="boletimMapaPlaceholder" class="mapa-placeholder">
-          <span class="mapa-placeholder-icone">🗺️</span>
-          <span>Clique para adicionar foto ou mapa do local</span>
-        </div>
-        <button type="button" id="boletimBtnMapa" class="botao-foto botao-foto-mapa">🖼️ Trocar imagem</button>
-        <input type="file" id="boletimInputMapa" accept="image/*" style="display:none">
-      </div>
-      <div class="legenda-fonte editavel editavel-clara" contenteditable="true">Fonte: {{NOME DA FONTE OFICIAL}}</div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">②</span>Perímetro / Área de Atuação</div>
-      <ul class="editavel editavel-clara" contenteditable="true">
-        <li><b>{{Via/Bairro 1}}:</b> {{descrição do trecho ou ponto de concentração}}</li>
-        <li><b>{{Via/Bairro 2}}:</b> {{descrição do trecho ou ponto de concentração}}</li>
-        <li><b>{{Via/Bairro 3}}:</b> {{descrição do trecho ou ponto de concentração}}</li>
-      </ul>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">③</span>Impactos na Região</div>
-      <div class="grade-info">
-        <div class="card-info"><span>Vias afetadas</span><strong class="editavel editavel-clara" contenteditable="true">{{Sim / Não — detalhar}}</strong></div>
-        <div class="card-info"><span>Transporte público</span><strong class="editavel editavel-clara" contenteditable="true">{{Normal / Alterado}}</strong></div>
-        <div class="card-info"><span>Comércio local</span><strong class="editavel editavel-clara" contenteditable="true">{{Funcionamento normal / Fechado por recomendação}}</strong></div>
-        <div class="card-info"><span>Previsão de encerramento</span><strong class="editavel editavel-clara" contenteditable="true">{{Horário estimado ou "Sem previsão"}}</strong></div>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">④</span>Orientações de Segurança</div>
-      <div class="orientacoes">
-        <ul class="editavel editavel-clara" contenteditable="true">
-          <li>Evite circular ou permanecer nas proximidades de <b>{{local}}</b> durante o período da operação;</li>
-          <li>Mantenha portas, janelas e portões fechados caso esteja em imóvel na área indicada;</li>
-          <li>Não compartilhe imagens ou a localização de agentes em tempo real;</li>
-          <li>Siga rigorosamente as orientações de agentes de segurança pública presentes no local;</li>
-          <li>Em caso de dúvida ou necessidade, acione a Central Movisafe pelos canais de emergência habituais.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">⑤</span>Fonte</div>
-      <p class="fonte-oficial editavel editavel-clara" contenteditable="true">
-        Fonte: <a href="{{URL_FONTE_OFICIAL}}" target="_blank" rel="noopener">{{NOME DA FONTE OFICIAL — ex.: PMERJ, PCERJ, COR-Rio}}</a>
-        · Atualizado em {{DATA/HORA DA ÚLTIMA ATUALIZAÇÃO}}
-      </p>
-    </div>
-    <div class="aviso-monitoramento editavel editavel-clara" contenteditable="true">
-      Permaneceremos monitorando o evento e enviaremos novos informes conforme necessário.<br>
-      <b>Equipe Movisafe / Smart CICC</b>
-    </div>
-  </div>
-  <div class="rodape">
-    <img id="boletimImgRodape" class="rodape-imagem" src="" alt="" onerror="this.style.display='none'">
-    <button type="button" id="boletimBtnRodape" class="botao-foto botao-foto-rodape">🖼️ Trocar imagem</button>
-    <input type="file" id="boletimInputRodape" accept="image/*" style="display:none">
-  </div>
-</div>`;
-
-  const INTERDICOES_TEMPLATE = `
-<div class="boletim">
-  <div class="boletim-faixa-topo"></div>
-  <div class="cabecalho-capa" style="--foto-capa:url('');">
-    <button type="button" class="botao-foto" id="boletimBtnCapa">🖼️ Trocar foto</button>
-    <input type="file" id="boletimInputCapa" accept="image/*" style="display:none">
-    <div class="capa-chevrons"><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="capa-conteudo">
-      <div class="capa-logo"><span class="movi">MOVI</span><span class="safe">SAFE</span></div>
-      <div class="capa-eyebrow">Boletim de</div>
-      <div class="capa-titulo">Interdições</div>
-      <div class="capa-linha-accent"></div>
-      <div class="capa-sub">Programadas</div>
-      <div class="capa-linha-accent-fina"></div>
-      <div class="capa-local editavel" contenteditable="true">{{CIDADE}}</div>
-    </div>
-  </div>
-  <div class="info-secundaria">
-    <div class="confidencial">Este boletim é direcionado exclusivamente aos clientes Movisafe. Material informativo confidencial — uso interno e restrito.</div>
-    <div class="meta-linha">
-      <span><b>Local:</b> <span class="editavel" contenteditable="true">{{BAIRRO}}, {{CIDADE}} – {{UF}}</span></span>
-      <span><b>Data/Hora:</b> <span class="editavel" contenteditable="true">{{DATA}} · {{HORA}}</span></span>
-      <span><b>Órgão responsável:</b> <span class="editavel" contenteditable="true">{{ORGAO_RESPONSAVEL}}</span></span>
-    </div>
-    <div class="titulo-boletim editavel" contenteditable="true">{{TÍTULO DA INTERDIÇÃO — ex.: Via Interditada em {{BAIRRO}} para Obras de Manutenção}}</div>
-  </div>
-  <div class="faixa-alerta">
-    <span class="ponto"></span>
-    <span class="editavel editavel-clara" contenteditable="true">NÍVEL DE IMPACTO: {{BAIXO / MODERADO / ALTO}} — planeje rotas alternativas com antecedência</span>
-  </div>
-  <div class="corpo">
-    <div class="resumo editavel editavel-clara" contenteditable="true">
-      Este Boletim tem o propósito de informar que <b>{{ÓRGÃO RESPONSÁVEL — ex.: CET-Rio / Prefeitura / Concessionária}}</b>
-      programou uma interdição de via a partir de <b>{{DATA E HORA DE INÍCIO}}</b>, em <b>{{BAIRRO / REGIÃO}}</b>,
-      com o objetivo de {{MOTIVO DA INTERDIÇÃO — ex.: obras de manutenção, evento programado, ação de infraestrutura}}.
-      A previsão é de que a via seja liberada em <b>{{DATA E HORA DE TÉRMINO}}</b>.
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">①</span>Resumo da Interdição</div>
-      <p class="editavel editavel-clara" contenteditable="true">{{Parágrafo descritivo: motivo da interdição, órgão/empresa responsável, trechos e sentidos afetados, janela de horário e se há repetição em dias seguintes.}}</p>
-      <div class="mapa-upload-wrap">
-        <img id="boletimImgMapa" class="imagem-mapa" src="" alt="Mapa ou foto do local" onerror="this.style.display='none';">
-        <div id="boletimMapaPlaceholder" class="mapa-placeholder">
-          <span class="mapa-placeholder-icone">🗺️</span>
-          <span>Clique para adicionar foto ou mapa do local</span>
-        </div>
-        <button type="button" id="boletimBtnMapa" class="botao-foto botao-foto-mapa">🖼️ Trocar imagem</button>
-        <input type="file" id="boletimInputMapa" accept="image/*" style="display:none">
-      </div>
-      <div class="legenda-fonte editavel editavel-clara" contenteditable="true">Fonte: {{NOME DA FONTE OFICIAL}}</div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">②</span>Vias e Trechos Interditados</div>
-      <ul class="editavel editavel-clara" contenteditable="true">
-        <li><b>{{Via/Trecho 1}}:</b> {{sentido/trecho afetado e horário}}</li>
-        <li><b>{{Via/Trecho 2}}:</b> {{sentido/trecho afetado e horário}}</li>
-        <li><b>{{Via/Trecho 3}}:</b> {{sentido/trecho afetado e horário}}</li>
-      </ul>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">③</span>Impactos na Região</div>
-      <div class="grade-info">
-        <div class="card-info"><span>Rotas alternativas</span><strong class="editavel editavel-clara" contenteditable="true">{{Sim / Não — detalhar}}</strong></div>
-        <div class="card-info"><span>Transporte público</span><strong class="editavel editavel-clara" contenteditable="true">{{Normal / Alterado}}</strong></div>
-        <div class="card-info"><span>Comércio/acesso local</span><strong class="editavel editavel-clara" contenteditable="true">{{Normal / Restrito}}</strong></div>
-        <div class="card-info"><span>Previsão de liberação</span><strong class="editavel editavel-clara" contenteditable="true">{{Horário estimado ou "Sem previsão"}}</strong></div>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">④</span>Orientações de Segurança</div>
-      <div class="orientacoes">
-        <ul class="editavel editavel-clara" contenteditable="true">
-          <li>Planeje o deslocamento com antecedência e evite <b>{{via/trecho interditado}}</b> no período informado;</li>
-          <li>Considere rotas alternativas sugeridas ou o uso de transporte público, quando aplicável;</li>
-          <li>Redobre a atenção em desvios, faixas reduzidas e sinalização temporária;</li>
-          <li>Reserve tempo extra para compromissos e reuniões na região afetada;</li>
-          <li>Em caso de dúvida ou necessidade, acione a Central Movisafe pelos canais de emergência habituais.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">⑤</span>Fonte</div>
-      <p class="fonte-oficial editavel editavel-clara" contenteditable="true">
-        Fonte: <a href="{{URL_FONTE_OFICIAL}}" target="_blank" rel="noopener">{{NOME DA FONTE OFICIAL — ex.: PMERJ, PCERJ, COR-Rio}}</a>
-        · Atualizado em {{DATA/HORA DA ÚLTIMA ATUALIZAÇÃO}}
-      </p>
-    </div>
-    <div class="aviso-monitoramento editavel editavel-clara" contenteditable="true">
-      Permaneceremos monitorando o evento e enviaremos novos informes conforme necessário.<br>
-      <b>Equipe Movisafe / Smart CICC</b>
-    </div>
-  </div>
-  <div class="rodape">
-    <img id="boletimImgRodape" class="rodape-imagem" src="" alt="" onerror="this.style.display='none'">
-    <button type="button" id="boletimBtnRodape" class="botao-foto botao-foto-rodape">🖼️ Trocar imagem</button>
-    <input type="file" id="boletimInputRodape" accept="image/*" style="display:none">
-  </div>
-</div>`;
-
-  const EVENTOS_TEMPLATE = `
-<div class="boletim">
-  <div class="boletim-faixa-topo"></div>
-  <div class="cabecalho-capa" style="--foto-capa:url('');">
-    <button type="button" class="botao-foto" id="boletimBtnCapa">🖼️ Trocar foto</button>
-    <input type="file" id="boletimInputCapa" accept="image/*" style="display:none">
-    <div class="capa-chevrons"><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="capa-conteudo">
-      <div class="capa-logo"><span class="movi">MOVI</span><span class="safe">SAFE</span></div>
-      <div class="capa-eyebrow">Boletim de</div>
-      <div class="capa-titulo">Grandes</div>
-      <div class="capa-linha-accent"></div>
-      <div class="capa-sub">Eventos</div>
-      <div class="capa-linha-accent-fina"></div>
-      <div class="capa-local editavel" contenteditable="true">{{CIDADE}}</div>
-    </div>
-  </div>
-  <div class="info-secundaria">
-    <div class="confidencial">Este boletim é direcionado exclusivamente aos clientes Movisafe. Material informativo confidencial — uso interno e restrito.</div>
-    <div class="meta-linha">
-      <span><b>Local:</b> <span class="editavel" contenteditable="true">{{BAIRRO}}, {{CIDADE}} – {{UF}}</span></span>
-      <span><b>Data/Hora:</b> <span class="editavel" contenteditable="true">{{DATA}} · {{HORA}}</span></span>
-      <span><b>Órgão responsável:</b> <span class="editavel" contenteditable="true">{{ORGAO_RESPONSAVEL}}</span></span>
-    </div>
-    <div class="titulo-boletim editavel" contenteditable="true">{{TÍTULO DO EVENTO — ex.: {{NOME DO EVENTO}} Reúne Grande Público em {{BAIRRO}}}}</div>
-  </div>
-  <div class="faixa-alerta">
-    <span class="ponto"></span>
-    <span class="editavel editavel-clara" contenteditable="true">STATUS DO EVENTO: {{PROGRAMADO / EM ANDAMENTO / ENCERRADO}} — grande fluxo de público previsto na região</span>
-  </div>
-  <div class="corpo">
-    <div class="resumo editavel editavel-clara" contenteditable="true">
-      Este Boletim tem o propósito de informar sobre <b>{{NOME DO EVENTO}}</b>, programado para
-      <b>{{DATA E HORÁRIO}}</b>, em <b>{{LOCAL / BAIRRO / REGIÃO}}</b>, com público estimado de
-      <b>{{PÚBLICO ESTIMADO, se divulgado}}</b>. O evento é organizado por {{ORGANIZADOR/ÓRGÃO RESPONSÁVEL}}.
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">①</span>Resumo do Evento</div>
-      <p class="editavel editavel-clara" contenteditable="true">{{Parágrafo descritivo: natureza do evento, organizador, estrutura montada (palco, arquibancadas, bloqueios), esquema especial de segurança e trânsito previsto.}}</p>
-      <div class="mapa-upload-wrap">
-        <img id="boletimImgMapa" class="imagem-mapa" src="" alt="Mapa ou foto do local" onerror="this.style.display='none';">
-        <div id="boletimMapaPlaceholder" class="mapa-placeholder">
-          <span class="mapa-placeholder-icone">🗺️</span>
-          <span>Clique para adicionar foto ou mapa do local</span>
-        </div>
-        <button type="button" id="boletimBtnMapa" class="botao-foto botao-foto-mapa">🖼️ Trocar imagem</button>
-        <input type="file" id="boletimInputMapa" accept="image/*" style="display:none">
-      </div>
-      <div class="legenda-fonte editavel editavel-clara" contenteditable="true">Fonte: {{NOME DA FONTE OFICIAL}}</div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">②</span>Local e Estrutura do Evento</div>
-      <ul class="editavel editavel-clara" contenteditable="true">
-        <li><b>{{Ponto de acesso/entrada}}:</b> {{descrição}}</li>
-        <li><b>{{Área de concentração/palco}}:</b> {{descrição}}</li>
-        <li><b>{{Perímetro de segurança}}:</b> {{descrição}}</li>
-      </ul>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">③</span>Impactos na Região</div>
-      <div class="grade-info">
-        <div class="card-info"><span>Vias afetadas</span><strong class="editavel editavel-clara" contenteditable="true">{{Sim / Não — detalhar}}</strong></div>
-        <div class="card-info"><span>Transporte público</span><strong class="editavel editavel-clara" contenteditable="true">{{Normal / Reforçado / Alterado}}</strong></div>
-        <div class="card-info"><span>Comércio local</span><strong class="editavel editavel-clara" contenteditable="true">{{Funcionamento normal / Fechado por recomendação}}</strong></div>
-        <div class="card-info"><span>Previsão de encerramento</span><strong class="editavel editavel-clara" contenteditable="true">{{Horário estimado ou "Sem previsão"}}</strong></div>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">④</span>Orientações de Segurança</div>
-      <div class="orientacoes">
-        <ul class="editavel editavel-clara" contenteditable="true">
-          <li>Chegue com antecedência e evite deixar veículos em <b>{{via/local}}</b> durante o evento;</li>
-          <li>Fique atento a aglomerações e mantenha distância de saídas de emergência desobstruídas;</li>
-          <li>Combine ponto de encontro com seu grupo caso haja perda de sinal ou grande fluxo de pessoas;</li>
-          <li>Siga as orientações da equipe de segurança e sinalização do evento;</li>
-          <li>Em caso de dúvida ou necessidade, acione a Central Movisafe pelos canais de emergência habituais.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">⑤</span>Fonte</div>
-      <p class="fonte-oficial editavel editavel-clara" contenteditable="true">
-        Fonte: <a href="{{URL_FONTE_OFICIAL}}" target="_blank" rel="noopener">{{NOME DA FONTE OFICIAL — ex.: PMERJ, PCERJ, COR-Rio}}</a>
-        · Atualizado em {{DATA/HORA DA ÚLTIMA ATUALIZAÇÃO}}
-      </p>
-    </div>
-    <div class="aviso-monitoramento editavel editavel-clara" contenteditable="true">
-      Permaneceremos monitorando o evento e enviaremos novos informes conforme necessário.<br>
-      <b>Equipe Movisafe / Smart CICC</b>
-    </div>
-  </div>
-  <div class="rodape">
-    <img id="boletimImgRodape" class="rodape-imagem" src="" alt="" onerror="this.style.display='none'">
-    <button type="button" id="boletimBtnRodape" class="botao-foto botao-foto-rodape">🖼️ Trocar imagem</button>
-    <input type="file" id="boletimInputRodape" accept="image/*" style="display:none">
-  </div>
-</div>`;
-
-  const SEGURANCA_TEMPLATE = `
-<div class="boletim">
-  <div class="boletim-faixa-topo"></div>
-  <div class="cabecalho-capa" style="--foto-capa:url('');">
-    <button type="button" class="botao-foto" id="boletimBtnCapa">🖼️ Trocar foto</button>
-    <input type="file" id="boletimInputCapa" accept="image/*" style="display:none">
-    <div class="capa-chevrons"><span></span><span></span><span></span><span></span><span></span></div>
-    <div class="capa-conteudo">
-      <div class="capa-logo"><span class="movi">MOVI</span><span class="safe">SAFE</span></div>
-      <div class="capa-eyebrow">Boletim</div>
-      <div class="capa-titulo">Informativo</div>
-      <div class="capa-linha-accent"></div>
-      <div class="capa-sub">de Segurança</div>
-      <div class="capa-linha-accent-fina"></div>
-      <div class="capa-local editavel" contenteditable="true">{{CIDADE}}</div>
-    </div>
-  </div>
-  <div class="info-secundaria">
-    <div class="confidencial">Este boletim é direcionado exclusivamente aos clientes Movisafe. Material informativo confidencial — uso interno e restrito.</div>
-    <div class="meta-linha">
-      <span><b>Local:</b> <span class="editavel" contenteditable="true">{{BAIRRO}}, {{CIDADE}} – {{UF}}</span></span>
-      <span><b>Data/Hora:</b> <span class="editavel" contenteditable="true">{{DATA}} · {{HORA}}</span></span>
-      <span><b>Órgão responsável:</b> <span class="editavel" contenteditable="true">{{ORGAO_RESPONSAVEL}}</span></span>
-    </div>
-    <div class="titulo-boletim editavel" contenteditable="true">{{TÍTULO DO INFORMATIVO — ex.: Recomendações de Segurança sobre {{ASSUNTO}}}}</div>
-  </div>
-  <div class="faixa-alerta">
-    <span class="ponto"></span>
-    <span class="editavel editavel-clara" contenteditable="true">NÍVEL DE RELEVÂNCIA: {{BAIXO / MODERADO / ALTO}} — informação de interesse dos clientes Movisafe</span>
-  </div>
-  <div class="corpo">
-    <div class="resumo editavel editavel-clara" contenteditable="true">
-      Este Boletim tem o propósito de informar sobre <b>{{ASSUNTO DO INFORMATIVO}}</b>, identificado em
-      <b>{{DATA}}</b>, com possível impacto para clientes na região de <b>{{BAIRRO / REGIÃO, se aplicável}}</b>.
-      A Movisafe recomenda atenção às orientações abaixo.
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">①</span>Resumo do Informe</div>
-      <p class="editavel editavel-clara" contenteditable="true">{{Parágrafo descritivo: contexto do assunto, fonte da informação, motivo pelo qual é relevante para a segurança dos clientes e eventuais desdobramentos esperados.}}</p>
-      <div class="mapa-upload-wrap">
-        <img id="boletimImgMapa" class="imagem-mapa" src="" alt="Mapa ou foto do local" onerror="this.style.display='none';">
-        <div id="boletimMapaPlaceholder" class="mapa-placeholder">
-          <span class="mapa-placeholder-icone">🗺️</span>
-          <span>Clique para adicionar foto ou mapa do local</span>
-        </div>
-        <button type="button" id="boletimBtnMapa" class="botao-foto botao-foto-mapa">🖼️ Trocar imagem</button>
-        <input type="file" id="boletimInputMapa" accept="image/*" style="display:none">
-      </div>
-      <div class="legenda-fonte editavel editavel-clara" contenteditable="true">Fonte: {{NOME DA FONTE OFICIAL}}</div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">②</span>Pontos de Atenção</div>
-      <ul class="editavel editavel-clara" contenteditable="true">
-        <li><b>{{Ponto de atenção 1}}:</b> {{descrição}}</li>
-        <li><b>{{Ponto de atenção 2}}:</b> {{descrição}}</li>
-        <li><b>{{Ponto de atenção 3}}:</b> {{descrição}}</li>
-      </ul>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">③</span>Impacto e Abrangência</div>
-      <div class="grade-info">
-        <div class="card-info"><span>Nível de urgência</span><strong class="editavel editavel-clara" contenteditable="true">{{Baixo / Moderado / Alto}}</strong></div>
-        <div class="card-info"><span>Área impactada</span><strong class="editavel editavel-clara" contenteditable="true">{{Local, região ou "Geral"}}</strong></div>
-        <div class="card-info"><span>Ação recomendada</span><strong class="editavel editavel-clara" contenteditable="true">{{Resumo da ação recomendada}}</strong></div>
-        <div class="card-info"><span>Validade da informação</span><strong class="editavel editavel-clara" contenteditable="true">{{Prazo estimado ou "Até novo aviso"}}</strong></div>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">④</span>Orientações de Segurança</div>
-      <div class="orientacoes">
-        <ul class="editavel editavel-clara" contenteditable="true">
-          <li>Compartilhe esta informação com as equipes/áreas potencialmente impactadas;</li>
-          <li>Reforce os protocolos internos de segurança já estabelecidos para este tipo de situação;</li>
-          <li>Mantenha canais de comunicação abertos com a Central Movisafe durante o período de vigência;</li>
-          <li>Reporte à Movisafe qualquer ocorrência relacionada a este informativo;</li>
-          <li>Em caso de dúvida ou necessidade, acione a Central Movisafe pelos canais de emergência habituais.</li>
-        </ul>
-      </div>
-    </div>
-    <div class="secao">
-      <div class="secao-titulo"><span class="icone">⑤</span>Fonte</div>
-      <p class="fonte-oficial editavel editavel-clara" contenteditable="true">
-        Fonte: <a href="{{URL_FONTE_OFICIAL}}" target="_blank" rel="noopener">{{NOME DA FONTE OFICIAL — ex.: PMERJ, PCERJ, COR-Rio}}</a>
-        · Atualizado em {{DATA/HORA DA ÚLTIMA ATUALIZAÇÃO}}
-      </p>
-    </div>
-    <div class="aviso-monitoramento editavel editavel-clara" contenteditable="true">
-      Permaneceremos monitorando o evento e enviaremos novos informes conforme necessário.<br>
-      <b>Equipe Movisafe / Smart CICC</b>
-    </div>
-  </div>
-  <div class="rodape">
-    <img id="boletimImgRodape" class="rodape-imagem" src="" alt="" onerror="this.style.display='none'">
-    <button type="button" id="boletimBtnRodape" class="botao-foto botao-foto-rodape">🖼️ Trocar imagem</button>
-    <input type="file" id="boletimInputRodape" accept="image/*" style="display:none">
-  </div>
-</div>`;
-
-  const BOLETIM_TEMPLATES = {
-    'operacoes-rj': BOLETIM_TEMPLATE,
-    'interdicoes': INTERDICOES_TEMPLATE,
-    'eventos': EVENTOS_TEMPLATE,
-    'seguranca': SEGURANCA_TEMPLATE,
-  };
-  let boletimTipoAtual = '';
-
-  let boletimCapaFile = null, boletimCapaURL = '';
-  let boletimMapaFile = null, boletimMapaURL = '';
-  let boletimRodapeFile = null, boletimRodapeURL = '';
-
-  // Cola sempre como texto simples nos campos editáveis do boletim, para que o
-  // texto colado herde a fonte/estilo do template em vez de trazer a formatação
-  // de origem (Word, e-mail, site de notícia etc.).
-  document.getElementById('informe-boletim-canvas').addEventListener('paste', (e) => {
-    if (!e.target.closest('.editavel')) return;
-    e.preventDefault();
-    const texto = (e.clipboardData || window.clipboardData).getData('text/plain');
-    document.execCommand('insertText', false, texto);
-  });
-
-  function ligarBotoesImagemBoletim(){
-    const canvas = document.getElementById('informe-boletim-canvas');
-    canvas.querySelector('#boletimBtnCapa')?.addEventListener('click', () => canvas.querySelector('#boletimInputCapa').click());
-    canvas.querySelector('#boletimBtnMapa')?.addEventListener('click', () => canvas.querySelector('#boletimInputMapa').click());
-    canvas.querySelector('#boletimMapaPlaceholder')?.addEventListener('click', () => canvas.querySelector('#boletimInputMapa').click());
-    canvas.querySelector('#boletimBtnRodape')?.addEventListener('click', () => canvas.querySelector('#boletimInputRodape').click());
-
-    canvas.querySelector('#boletimInputCapa')?.addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      boletimCapaFile = file;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        canvas.querySelector('.cabecalho-capa').style.setProperty('--foto-capa', 'url(' + ev.target.result + ')');
-      };
-      reader.readAsDataURL(file);
-    });
-    canvas.querySelector('#boletimInputMapa')?.addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      boletimMapaFile = file;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = canvas.querySelector('#boletimImgMapa');
-        img.src = ev.target.result;
-        img.style.display = 'block';
-        const ph = canvas.querySelector('#boletimMapaPlaceholder');
-        if (ph) ph.style.display = 'none';
-        const bt = canvas.querySelector('#boletimBtnMapa');
-        if (bt) bt.style.display = 'flex';
-      };
-      reader.readAsDataURL(file);
-    });
-    canvas.querySelector('#boletimInputRodape')?.addEventListener('change', (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      boletimRodapeFile = file;
-      const reader = new FileReader();
-      reader.onload = (ev) => {
-        const img = canvas.querySelector('#boletimImgRodape');
-        img.src = ev.target.result;
-        img.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    });
-  }
-
-  function carregarBoletimEmBranco(){
-    const tipo = document.getElementById('i-tipo').value;
-    document.getElementById('informe-boletim-canvas').innerHTML = BOLETIM_TEMPLATES[tipo] || BOLETIM_TEMPLATE;
-    boletimTipoAtual = tipo;
-    boletimCapaFile = null; boletimCapaURL = '';
-    boletimMapaFile = null; boletimMapaURL = '';
-    boletimRodapeFile = null; boletimRodapeURL = '';
-    ligarBotoesImagemBoletim();
-  }
-
-  // Re-hidrata o HTML "limpo" salvo (sem contenteditable nem botões de imagem)
-  // de volta para o estado editável do editor visual.
-  function reidratarBoletim(html){
-    const wrap = document.createElement('div');
-    wrap.innerHTML = html;
-    const boletim = wrap.querySelector('.boletim');
-    if (!boletim) return html;
-
-    boletim.querySelectorAll('.editavel').forEach(el => el.setAttribute('contenteditable', 'true'));
-
-    const capa = boletim.querySelector('.cabecalho-capa');
-    if (capa && !capa.querySelector('#boletimBtnCapa')){
-      capa.insertAdjacentHTML('afterbegin',
-        '<button type="button" class="botao-foto" id="boletimBtnCapa">🖼️ Trocar foto</button>' +
-        '<input type="file" id="boletimInputCapa" accept="image/*" style="display:none">');
-    }
-
-    const mapaWrap = boletim.querySelector('.mapa-upload-wrap');
-    if (mapaWrap && !mapaWrap.querySelector('#boletimBtnMapa')){
-      mapaWrap.insertAdjacentHTML('beforeend',
-        '<button type="button" id="boletimBtnMapa" class="botao-foto botao-foto-mapa">🖼️ Trocar imagem</button>' +
-        '<input type="file" id="boletimInputMapa" accept="image/*" style="display:none">');
-    }
-    const imgMapa = boletim.querySelector('#boletimImgMapa');
-    const placeholder = boletim.querySelector('#boletimMapaPlaceholder');
-    const btnMapa = boletim.querySelector('#boletimBtnMapa');
-    if (imgMapa && imgMapa.getAttribute('src')){
-      imgMapa.style.display = 'block';
-      if (placeholder) placeholder.style.display = 'none';
-      if (btnMapa) btnMapa.style.display = 'flex';
-    } else if (placeholder){
-      placeholder.style.display = 'flex';
-    }
-
-    const rodape = boletim.querySelector('.rodape');
-    if (rodape && !rodape.querySelector('#boletimBtnRodape')){
-      rodape.insertAdjacentHTML('beforeend',
-        '<button type="button" id="boletimBtnRodape" class="botao-foto botao-foto-rodape">🖼️ Trocar imagem</button>' +
-        '<input type="file" id="boletimInputRodape" accept="image/*" style="display:none">');
-    }
-    const imgRodape = boletim.querySelector('#boletimImgRodape');
-    if (imgRodape && imgRodape.getAttribute('src')) imgRodape.style.display = 'block';
-
-    return wrap.innerHTML;
-  }
-
-  function carregarBoletimExistente(html, capaUrl, mapaUrl, rodapeUrl){
-    document.getElementById('informe-boletim-canvas').innerHTML = reidratarBoletim(html);
-    boletimTipoAtual = document.getElementById('i-tipo').value;
-    boletimCapaFile = null; boletimCapaURL = capaUrl || '';
-    boletimMapaFile = null; boletimMapaURL = mapaUrl || '';
-    boletimRodapeFile = null; boletimRodapeURL = rodapeUrl || '';
-    ligarBotoesImagemBoletim();
-  }
-
-  function atualizarVisibilidadeCamposInforme(){
-    const tipo = document.getElementById('i-tipo').value;
-    const isBoletim = !!BOLETIM_TEMPLATES[tipo];
-    document.getElementById('informe-campos-genericos').style.display = isBoletim ? 'none' : 'flex';
-    document.getElementById('informe-campos-genericos').style.flexDirection = 'column';
-    document.getElementById('informe-campos-genericos').style.gap = '14px';
-    document.getElementById('informe-boletim-editor').style.display = isBoletim ? 'block' : 'none';
-    const temBoletim = !!document.getElementById('informe-boletim-canvas').querySelector('.boletim');
-    if (isBoletim && (!temBoletim || boletimTipoAtual !== tipo)){
-      carregarBoletimEmBranco();
-    }
-  }
-  document.getElementById('i-tipo').addEventListener('change', atualizarVisibilidadeCamposInforme);
-
   /* ---- Informe (template padronizado) ---- */
   document.getElementById('i-tipo').innerHTML = TEMPLATES.map(t => `<option value="${t.id}">${t.label}</option>`).join('');
   document.getElementById('i-data').value = todayISO();
-  atualizarVisibilidadeCamposInforme();
 
   let currentInformeFiles = [];        // File[] recém-selecionados (enviados no submit)
   let currentInformeExistingURLs = []; // string[] já publicadas (mantidas ao editar)
@@ -3479,7 +2418,7 @@
     document.getElementById('i-edit-id').value = '';
     document.getElementById('i-data').value = todayISO();
     document.getElementById('informe-edit-banner').style.display = 'none';
-    document.getElementById('i-submit-btn').textContent = 'Publicar boletim';
+    document.getElementById('i-submit-btn').textContent = 'Publicar informe';
     document.getElementById('i-submit-btn').disabled = false;
     document.getElementById('i-cancel-edit').style.display = 'none';
     currentInformeFiles = [];
@@ -3488,22 +2427,18 @@
     currentInformeMidURL = '';
     setInformeMidPreview('');
     renderInformeImagePreview();
-    document.getElementById('informe-boletim-canvas').innerHTML = '';
-    atualizarVisibilidadeCamposInforme();
   }
 
   function openInformeForDuplicate(item){
-    document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-informe'));
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-informe'));
     document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id==='pane-informe'));
 
     document.getElementById('i-edit-id').value = '';
     document.getElementById('i-tipo').value = item.tipo;
     document.getElementById('i-titulo').value = item.titulo + ' (cópia)';
     document.getElementById('i-data').value = todayISO();
-    document.getElementById('i-cidade').value = item.cidade || '';
-    document.getElementById('i-bairro').value = item.bairro || '';
     document.getElementById('i-resumo').value = item.resumo || '';
-    document.getElementById('i-corpo').value = item.corpo || '';
+    document.getElementById('i-corpo').value = item.corpo;
     document.getElementById('i-destaque').value = item.destaque || '';
     document.getElementById('i-recomendacao').value = item.recomendacao || '';
     currentInformeFiles = [];
@@ -3512,29 +2447,23 @@
     currentInformeMidFile = null;
     currentInformeMidURL = item.imagem_meio || '';
     setInformeMidPreview(currentInformeMidURL);
-    atualizarVisibilidadeCamposInforme();
-    if (BOLETIM_TEMPLATES[item.tipo] && item.conteudo_html){
-      carregarBoletimExistente(item.conteudo_html, '', '', '');
-    }
-    document.getElementById('informe-edit-banner').textContent = 'Duplicando boletim';
+    document.getElementById('informe-edit-banner').textContent = 'Duplicando informe';
     document.getElementById('informe-edit-banner').style.display = 'block';
-    document.getElementById('i-submit-btn').textContent = 'Publicar boletim';
+    document.getElementById('i-submit-btn').textContent = 'Publicar informe';
     document.getElementById('i-cancel-edit').style.display = 'block';
     openDrawer();
   }
 
   function openInformeForEdit(item){
-    document.querySelectorAll('#editor-tabs > .drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-informe'));
+    document.querySelectorAll('.drawer-tab').forEach(t => t.classList.toggle('active', t.dataset.pane==='pane-informe'));
     document.querySelectorAll('.drawer-pane').forEach(p => p.classList.toggle('active', p.id==='pane-informe'));
 
     document.getElementById('i-edit-id').value = item.id;
     document.getElementById('i-tipo').value = item.tipo;
     document.getElementById('i-titulo').value = item.titulo;
     document.getElementById('i-data').value = item.data;
-    document.getElementById('i-cidade').value = item.cidade || '';
-    document.getElementById('i-bairro').value = item.bairro || '';
     document.getElementById('i-resumo').value = item.resumo || '';
-    document.getElementById('i-corpo').value = item.corpo || '';
+    document.getElementById('i-corpo').value = item.corpo;
     document.getElementById('i-destaque').value = item.destaque || '';
     document.getElementById('i-recomendacao').value = item.recomendacao || '';
     currentInformeFiles = [];
@@ -3543,11 +2472,7 @@
     currentInformeMidFile = null;
     currentInformeMidURL = item.imagem_meio || '';
     setInformeMidPreview(currentInformeMidURL);
-    atualizarVisibilidadeCamposInforme();
-    if (BOLETIM_TEMPLATES[item.tipo] && item.conteudo_html){
-      carregarBoletimExistente(item.conteudo_html, '', '', '');
-    }
-    document.getElementById('informe-edit-banner').textContent = 'Editando boletim publicado';
+    document.getElementById('informe-edit-banner').textContent = 'Editando informe publicado';
     document.getElementById('informe-edit-banner').style.display = 'block';
     document.getElementById('i-submit-btn').textContent = 'Salvar alterações';
     document.getElementById('i-cancel-edit').style.display = 'block';
@@ -3565,67 +2490,29 @@
     }
     const submitBtn = document.getElementById('i-submit-btn');
     const originalText = submitBtn.textContent;
-    const tipo = document.getElementById('i-tipo').value;
-    const isBoletim = !!BOLETIM_TEMPLATES[tipo];
-    if (isBoletim && !document.getElementById('informe-boletim-canvas').querySelector('.boletim')){
-      showToast('Carregue o boletim antes de publicar');
-      return;
-    }
     submitBtn.disabled = true;
     submitBtn.textContent = 'Enviando...';
     try {
-      let payload;
-      if (isBoletim){
-        const canvas = document.getElementById('informe-boletim-canvas');
-        if (boletimCapaFile) boletimCapaURL = await uploadInformeSingleImage(boletimCapaFile);
-        if (boletimMapaFile) boletimMapaURL = await uploadInformeSingleImage(boletimMapaFile);
-        if (boletimRodapeFile) boletimRodapeURL = await uploadInformeSingleImage(boletimRodapeFile);
-        if (boletimCapaURL) canvas.querySelector('.cabecalho-capa').style.setProperty('--foto-capa', `url('${boletimCapaURL}')`);
-        if (boletimMapaURL) canvas.querySelector('#boletimImgMapa').src = boletimMapaURL;
-        if (boletimRodapeURL) canvas.querySelector('#boletimImgRodape').src = boletimRodapeURL;
-        // Remove os controles de upload/edição do HTML salvo (ficam só na tela do editor)
-        const boletimEl = canvas.querySelector('.boletim').cloneNode(true);
-        boletimEl.querySelectorAll('.botao-foto, input[type=file]').forEach(el => el.remove());
-        boletimEl.querySelectorAll('.editavel').forEach(el => el.removeAttribute('contenteditable'));
-        payload = {
-          tipo,
-          titulo: document.getElementById('i-titulo').value,
-          data: document.getElementById('i-data').value,
-          cidade: document.getElementById('i-cidade').value || null,
-          bairro: document.getElementById('i-bairro').value || null,
-          conteudo_html: boletimEl.outerHTML,
-          resumo: null,
-          corpo: '',
-          destaque: null,
-          recomendacao: null,
-          imagens: [],
-          imagem_meio: null,
-        };
-      } else {
-        const uploaded = currentInformeFiles.length ? await uploadInformeImages(currentInformeFiles) : [];
-        const imagens = [...currentInformeExistingURLs, ...uploaded];
-        let imagemMeio = currentInformeMidURL || null;
-        if (currentInformeMidFile){
-          imagemMeio = await uploadInformeSingleImage(currentInformeMidFile);
-        }
-        payload = {
-          tipo,
-          titulo: document.getElementById('i-titulo').value,
-          data: document.getElementById('i-data').value,
-          cidade: document.getElementById('i-cidade').value || null,
-          bairro: document.getElementById('i-bairro').value || null,
-          resumo: document.getElementById('i-resumo').value,
-          corpo: document.getElementById('i-corpo').value,
-          destaque: document.getElementById('i-destaque').value || null,
-          recomendacao: document.getElementById('i-recomendacao').value || null,
-          imagens,
-          imagem_meio: imagemMeio,
-          conteudo_html: null,
-        };
+      const uploaded = currentInformeFiles.length ? await uploadInformeImages(currentInformeFiles) : [];
+      const imagens = [...currentInformeExistingURLs, ...uploaded];
+      let imagemMeio = currentInformeMidURL || null;
+      if (currentInformeMidFile){
+        imagemMeio = await uploadInformeSingleImage(currentInformeMidFile);
       }
+      const payload = {
+        tipo: document.getElementById('i-tipo').value,
+        titulo: document.getElementById('i-titulo').value,
+        data: document.getElementById('i-data').value,
+        resumo: document.getElementById('i-resumo').value,
+        corpo: document.getElementById('i-corpo').value,
+        destaque: document.getElementById('i-destaque').value || null,
+        recomendacao: document.getElementById('i-recomendacao').value || null,
+        imagens,
+        imagem_meio: imagemMeio,
+      };
       if (editId){
         await updateInforme(editId, payload);
-        showToast('Boletim atualizado com sucesso');
+        showToast('Informe atualizado com sucesso');
       } else {
         await addInforme({
           ...payload,
@@ -3633,24 +2520,18 @@
           operador_nome: requiresOperadorName() ? operadorNome : null,
           criado_em: new Date().toISOString(),
         });
-        showToast('Boletim publicado com sucesso');
+        showToast('Informe publicado com sucesso');
       }
       resetInformeForm();
       renderAll();
     } catch (err) {
-      showToast('Erro ao salvar o boletim');
+      showToast('Erro ao salvar o informe');
       submitBtn.disabled = false;
       submitBtn.textContent = originalText;
     }
   });
 
-  document.getElementById('informes-back').addEventListener('click', () => {
-    if (activeInformeDetail){
-      renderInformesFeed(state.informeTipo);
-      return;
-    }
-    switchView('home');
-  });
+  document.getElementById('informes-back').addEventListener('click', () => switchView('home'));
 
   /* ---- Aparência: carrossel do topo (admin) ---- */
   let currentHeroFile = null;
@@ -3756,16 +2637,6 @@
   document.getElementById('met-de').addEventListener('change', renderMetrics);
   document.getElementById('met-ate').addEventListener('change', renderMetrics);
 
-  /* ---- Exportar Métricas em PDF: usa a impressão do navegador (Salvar como PDF),
-     mantendo o mesmo layout das listas/dashboards — ver @media print no CSS. ---- */
-  document.getElementById('met-exportar-btn').addEventListener('click', () => {
-    document.body.classList.add('imprimindo-metricas');
-    window.print();
-  });
-  window.addEventListener('afterprint', () => {
-    document.body.classList.remove('imprimindo-metricas');
-  });
-
   /* ---- Exportar planilha CSV (admin) ----
      Gera link, data, tipo e região de todas as matérias publicadas.
      Abre direto no Excel/Sheets — delimitador ";" e BOM UTF-8 para acentos. */
@@ -3812,11 +2683,6 @@
     btn.disabled = false;
     renderPending();
   });
-
-  function formatDataError(error, fallback){
-    const message = error && (error.message || error.details || error.hint);
-    return message ? `${fallback}: ${message}` : fallback;
-  }
 
   function showToast(msg){
     const t = document.getElementById('toast');
@@ -3927,7 +2793,7 @@
   });
   document.addEventListener('click', (e) => {
     const pop = document.getElementById('share-popover');
-    if (!pop.hidden && !pop.contains(e.target) && !e.target.closest('.informe-share-btn') && !e.target.closest('.share-informe')) closeSharePopover();
+    if (!pop.hidden && !pop.contains(e.target) && !e.target.closest('.informe-share-btn')) closeSharePopover();
   });
 
   sb.auth.onAuthStateChange((_event, sbSession) => {
@@ -3935,46 +2801,14 @@
     refreshAuthUI();
   });
 
-  async function iniciarPlataforma(){
-    document.body.classList.remove('acesso-bloqueado');
-    document.getElementById('acesso-gate').hidden = true;
+  restoreSession().then(async () => {
     refreshAuthUI();
     renderSidebarViews();
     renderHeroCarousel();
     await renderAll();
-  }
-  function bloquearAcesso(){
-    document.body.classList.add('acesso-bloqueado');
-    document.getElementById('acesso-gate').hidden = false;
-  }
-
-  document.getElementById('acesso-form').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const errEl = document.getElementById('acesso-error');
-    errEl.style.display = 'none';
-    try{
-      await loginEditor(document.getElementById('acesso-email').value, document.getElementById('acesso-senha').value);
-      await iniciarPlataforma();
-      showToast('Sessão iniciada');
-    }catch(err){
-      errEl.textContent = err.message || 'Não foi possível entrar.';
-      errEl.style.display = 'block';
-    }
+    const sharedId = new URLSearchParams(location.search).get('informe');
+    if (sharedId) await openSharedInforme(sharedId);
   });
-
-  const sharedId = new URLSearchParams(location.search).get('informe');
-  if (sharedId){
-    // Link de compartilhamento (?informe=ID): mostra só aquele boletim,
-    // sem carregar o resto da plataforma nem exigir login.
-    document.body.classList.add('boletim-unico');
-    openSharedInforme(sharedId);
-  } else {
-    // Acesso direto (sem link de boletim): exige sessão para ver a plataforma.
-    restoreSession().then(async () => {
-      if (session) await iniciarPlataforma();
-      else bloquearAcesso();
-    });
-  }
 </script>
 </body>
 </html>
